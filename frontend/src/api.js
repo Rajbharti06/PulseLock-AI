@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const BASE = import.meta.env.VITE_API_URL || "https://pulselock-backend.onrender.com";
 
 function getToken() {
   return localStorage.getItem("token");

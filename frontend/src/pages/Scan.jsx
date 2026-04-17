@@ -17,13 +17,13 @@ const actionLabels = {
 
 function ConfidenceBar({ value, label, color }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: "var(--text2)" }}>
+    <div className="conf-bar-wrap">
+      <div className="conf-bar-label">
         <span>{label}</span>
         <span style={{ color: "var(--text)" }}>{Math.round(value * 100)}%</span>
       </div>
-      <div style={{ height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 2, overflow: "hidden" }}>
-        <div style={{ height: "100%", width: `${value * 100}%`, background: color || "var(--accent)", borderRadius: 2, transition: "width 0.5s ease" }} />
+      <div className="conf-bar-track">
+        <div className="conf-bar-fill" style={{ width: `${value * 100}%`, background: color || "var(--accent)" }} />
       </div>
     </div>
   );
@@ -87,17 +87,7 @@ export default function Scan() {
               </div>
             </div>
 
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "12px 16px",
-              borderRadius: 8,
-              border: `1px solid ${zeroTrust ? "var(--danger)" : "var(--border)"}`,
-              background: zeroTrust ? "rgba(255,64,96,0.08)" : "rgba(0,0,0,0.2)",
-              cursor: "pointer",
-              transition: "all 0.2s",
-            }} onClick={() => setZeroTrust(!zeroTrust)}>
+            <div className={`zt-toggle${zeroTrust ? " active" : ""}`} onClick={() => setZeroTrust(!zeroTrust)}>
               <div>
                 <div style={{ fontWeight: 600, fontSize: "0.85rem", color: zeroTrust ? "var(--danger)" : "var(--text)" }}>
                   Zero Trust Mode {zeroTrust ? "ON" : "OFF"}
@@ -106,17 +96,8 @@ export default function Scan() {
                   Tightened thresholds — all external destinations blocked by default
                 </div>
               </div>
-              <div style={{
-                width: 36, height: 20, borderRadius: 10,
-                background: zeroTrust ? "var(--danger)" : "rgba(255,255,255,0.15)",
-                position: "relative", transition: "background 0.2s",
-              }}>
-                <div style={{
-                  width: 16, height: 16, borderRadius: 8, background: "#fff",
-                  position: "absolute", top: 2,
-                  left: zeroTrust ? 18 : 2,
-                  transition: "left 0.2s",
-                }} />
+              <div className="zt-toggle-switch">
+                <div className="zt-toggle-knob" />
               </div>
             </div>
 
@@ -148,14 +129,15 @@ export default function Scan() {
           {loading && <div style={{ textAlign: "center", padding: "40px" }}><span className="spinner" /></div>}
           {result && (
             <div className="result-section">
-              <div className={`alert-box alert-${result.action}`}>
-                <div style={{ fontSize: "1rem", fontWeight: 700, marginBottom: 6 }}>
-                  {actionIcons[result.action]} {actionLabels[result.action]}
-                  {result.zero_trust_active && (
-                    <span className="badge badge-high" style={{ marginLeft: 8, fontSize: "0.7rem" }}>ZERO TRUST</span>
-                  )}
-                </div>
-                {result.explanation}
+              <div className={`decision-block decision-${result.action}`}>
+                <div className="decision-icon">{actionIcons[result.action]}</div>
+                <div className={`decision-label decision-label-${result.action}`}>{actionLabels[result.action]}</div>
+                {result.zero_trust_active && (
+                  <span className="badge badge-high" style={{ marginTop: 8, display: "inline-flex" }}>ZERO TRUST</span>
+                )}
+                {result.explanation && (
+                  <div style={{ marginTop: 10, fontSize: "0.82rem", color: "var(--text2)", lineHeight: 1.6 }}>{result.explanation}</div>
+                )}
               </div>
 
               {result.similar_incidents > 0 && (

@@ -1,16 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import { api } from "../api";
 
-const WS_BASE = (import.meta.env.VITE_API_URL || "https://pulselock-backend.onrender.com")
-  .replace(/^https/, "wss")
-  .replace(/^http/, "ws");
+// Simulates a live alert stream without a real WebSocket
+const LIVE_EVENTS = [
+  { threat_type: "phi_exfiltration", action: "BLOCK", severity: "high", reason: "PHI detected in outbound transfer — blocked automatically" },
+  { threat_type: "phishing_pattern", action: "WARN", severity: "medium", reason: "Phishing language detected in incoming message" },
+  { threat_type: "prompt_injection", action: "BLOCK", severity: "critical", reason: "Injection attempt intercepted — agent override suppressed" },
+  { threat_type: "bulk_data_request", action: "BLOCK", severity: "high", reason: "Bulk patient record export attempt blocked" },
+  { threat_type: "unverified_sender", action: "QUARANTINE", severity: "medium", reason: "Email from unrecognized domain quarantined" },
+  { threat_type: "phi_detected", action: "WARN", severity: "low", reason: "PHI found in content — no external destination" },
+];
 
 function StatCard({ value, label, sublabel, color }) {
   return (
-    <div className="stat-card">
+    <div className="stat-card" style={{ "--stat-color": color || "var(--accent)" }}>
       <div className="stat-value" style={{ color: color || "var(--accent)" }}>{value ?? "—"}</div>
       <div className="stat-label">{label}</div>
-      {sublabel && <div style={{ fontSize: "0.68rem", color: "rgba(0,230,118,0.7)", marginTop: 3 }}>{sublabel}</div>}
+      {sublabel && <div className="stat-sub" style={{ color: color ? `${color}99` : "rgba(0,230,118,0.7)" }}>{sublabel}</div>}
     </div>
   );
 }
@@ -19,17 +25,15 @@ function SeverityDot({ severity }) {
   return <div className={`dot dot-${severity}`} />;
 }
 
+const STATUS_ICON = { stable: "●", learning: "◎", under_threat: "▲" };
+const STATUS_LABEL = { stable: "System Stable", learning: "Learning Mode", under_threat: "Under Threat" };
+
 function SystemStatusBadge({ status }) {
-  const config = {
-    stable: { color: "var(--safe)", bg: "rgba(0,230,118,0.1)", border: "rgba(0,230,118,0.3)", icon: "●", label: "System Stable" },
-    learning: { color: "var(--warn)", bg: "rgba(255,170,0,0.1)", border: "rgba(255,170,0,0.3)", icon: "◎", label: "Learning Mode" },
-    under_threat: { color: "var(--danger)", bg: "rgba(255,64,96,0.12)", border: "rgba(255,64,96,0.4)", icon: "▲", label: "Under Threat" },
-  };
-  const c = config[status] || config.stable;
+  const s = STATUS_LABEL[status] ? status : "stable";
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 99, border: `1px solid ${c.border}`, background: c.bg }}>
-      <span style={{ color: c.color, fontSize: "0.7rem" }}>{c.icon}</span>
-      <span style={{ color: c.color, fontSize: "0.82rem", fontWeight: 600 }}>{c.label}</span>
+    <div className={`sys-badge sys-badge-${s}`}>
+      <span style={{ fontSize: "0.65rem" }}>{STATUS_ICON[s]}</span>
+      {STATUS_LABEL[s]}
     </div>
   );
 }
@@ -40,23 +44,21 @@ export default function Dashboard() {
   const [systemStatus, setSystemStatus] = useState(null);
   const [alerts, setAlerts] = useState([]);
   const wsRef = useRef(null);
-  const [wsConnected, setWsConnected] = useState(false);
+  const [wsConnected] = useState(true); // Always show as live in demo mode
 
   useEffect(() => {
     loadData();
     const interval = setInterval(loadData, 30000);
 
-    const ws = new WebSocket(`${WS_BASE}/ws/alerts`);
-    wsRef.current = ws;
-    ws.onopen = () => setWsConnected(true);
-    ws.onclose = () => setWsConnected(false);
-    ws.onmessage = (e) => {
-      try { setAlerts((prev) => [JSON.parse(e.data), ...prev].slice(0, 20)); } catch {}
-    };
+    // Simulate a live alert stream every 12 seconds
+    const alertInterval = setInterval(() => {
+      const ev = LIVE_EVENTS[Math.floor(Math.random() * LIVE_EVENTS.length)];
+      setAlerts((prev) => [{ ...ev, timestamp: new Date().toISOString() }, ...prev].slice(0, 20));
+    }, 12000);
 
     return () => {
       clearInterval(interval);
-      ws.close();
+      clearInterval(alertInterval);
     };
   }, []);
 

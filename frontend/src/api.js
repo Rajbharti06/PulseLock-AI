@@ -1,62 +1,40 @@
-const BASE = import.meta.env.VITE_API_URL || "https://pulselock-backend.onrender.com";
+// ============================================================
+// PulseLock AI — API Layer (Offline Demo Mode)
+// All calls routed through the local mock intelligence engine.
+// Backend will be connected when Render deployment is live.
+// ============================================================
 
-function getToken() {
-  return localStorage.getItem("token");
-}
-
-async function request(path, options = {}) {
-  const token = getToken();
-  const res = await fetch(`${BASE}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: res.statusText }));
-    throw new Error(err.detail || "Request failed");
-  }
-  return res.json();
-}
+import {
+  mockLogin,
+  mockScan,
+  mockScanEmail,
+  mockScanA2A,
+  mockGetThreats,
+  mockGetStats,
+  mockGetSystemStatus,
+  mockRunAudit,
+  mockTriggerLearning,
+  mockTriggerReport,
+  mockGetReports,
+  mockGetEvolution,
+  mockGetRules,
+} from "./mockEngine";
 
 export const api = {
-  login: (username, password) =>
-    request("/auth/login", { method: "POST", body: JSON.stringify({ username, password }) }),
-
-  register: (username, password, role) =>
-    request("/auth/register", { method: "POST", body: JSON.stringify({ username, password, role }) }),
-
-  scan: (content, source = "ui", destination = "", zero_trust = false) =>
-    request("/scan", { method: "POST", body: JSON.stringify({ content, source, destination, zero_trust }) }),
-
-  scanEmail: (sender, subject, body) =>
-    request("/scan/email", { method: "POST", body: JSON.stringify({ sender, subject, body }) }),
-
-  scanA2A: (requesting_agent, action, data, requesting_role = "viewer") =>
-    request("/scan/a2a", { method: "POST", body: JSON.stringify({ requesting_agent, action, data, requesting_role }) }),
-
-  getThreats: (limit = 50, severity = null) =>
-    request(`/threats?limit=${limit}${severity ? `&severity=${severity}` : ""}`),
-
-  getStats: () => request("/threats/stats"),
-
-  runAudit: () => request("/audit"),
-
-  triggerLearning: () => request("/intelligence/learn", { method: "POST" }),
-
-  triggerReport: () => request("/intelligence/report", { method: "POST" }),
-
-  getReports: () => request("/intelligence/reports"),
-
-  getHealth: () => request("/health"),
-
-  getRules: () => request("/rules"),
-
-  getSystemStatus: () => request("/system/status"),
-
-  getEvolution: () => request("/intelligence/evolution"),
-
-  getThreatTimeline: (id) => request(`/threats/${id}/timeline`),
+  login:        (username, password) => mockLogin(username, password),
+  scan:         (content, source, destination, zero_trust) => mockScan(content, source, destination, zero_trust),
+  scanEmail:    (sender, subject, body) => mockScanEmail(sender, subject, body),
+  scanA2A:      (requesting_agent, action, data, requesting_role) => mockScanA2A(requesting_agent, action, data, requesting_role),
+  getThreats:   (limit, severity) => mockGetThreats(limit, severity),
+  getStats:     () => mockGetStats(),
+  getSystemStatus: () => mockGetSystemStatus(),
+  runAudit:     () => mockRunAudit(),
+  triggerLearning: () => mockTriggerLearning(),
+  triggerReport:   () => mockTriggerReport(),
+  getReports:   () => mockGetReports(),
+  getHealth:    () => Promise.resolve({ status: "online", mode: "demo" }),
+  getRules:     () => mockGetRules(),
+  getSystemStatus: () => mockGetSystemStatus(),
+  getEvolution: () => mockGetEvolution(),
+  getThreatTimeline: () => Promise.resolve([]),
 };

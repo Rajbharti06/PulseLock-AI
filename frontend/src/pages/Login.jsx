@@ -15,11 +15,7 @@ export default function Login({ onLogin }) {
       const data = await api.login(username, password);
       onLogin(data.access_token);
     } catch (err) {
-      if (err.message === "Failed to fetch" || err.message?.includes("fetch")) {
-        setError("Backend is waking up (Render free tier — takes ~30s on first request). Please wait and try again.");
-      } else {
-        setError(err.message);
-      }
+      setError("Invalid credentials. Use demo: admin / admin123");
     } finally {
       setLoading(false);
     }

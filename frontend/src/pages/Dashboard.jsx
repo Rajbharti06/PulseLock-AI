@@ -1,11 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { api } from "../api";
 
-function StatCard({ value, label, color }) {
+const WS_BASE = (import.meta.env.VITE_API_URL || "http://localhost:8000")
+  .replace(/^https/, "wss")
+  .replace(/^http/, "ws");
+
+function StatCard({ value, label, sublabel, color }) {
   return (
     <div className="stat-card">
       <div className="stat-value" style={{ color: color || "var(--accent)" }}>{value ?? "—"}</div>
       <div className="stat-label">{label}</div>
+      {sublabel && <div style={{ fontSize: "0.68rem", color: "rgba(0,230,118,0.7)", marginTop: 3 }}>{sublabel}</div>}
     </div>
   );
 }
@@ -21,7 +26,6 @@ function SystemStatusBadge({ status }) {
     under_threat: { color: "var(--danger)", bg: "rgba(255,64,96,0.12)", border: "rgba(255,64,96,0.4)", icon: "▲", label: "Under Threat" },
   };
   const c = config[status] || config.stable;
-
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 99, border: `1px solid ${c.border}`, background: c.bg }}>
       <span style={{ color: c.color, fontSize: "0.7rem" }}>{c.icon}</span>
@@ -42,14 +46,12 @@ export default function Dashboard() {
     loadData();
     const interval = setInterval(loadData, 30000);
 
-    const ws = new WebSocket("ws://localhost:8000/ws/alerts");
+    const ws = new WebSocket(`${WS_BASE}/ws/alerts`);
     wsRef.current = ws;
     ws.onopen = () => setWsConnected(true);
     ws.onclose = () => setWsConnected(false);
     ws.onmessage = (e) => {
-      try {
-        setAlerts((prev) => [JSON.parse(e.data), ...prev].slice(0, 20));
-      } catch {}
+      try { setAlerts((prev) => [JSON.parse(e.data), ...prev].slice(0, 20)); } catch {}
     };
 
     return () => {
@@ -60,11 +62,7 @@ export default function Dashboard() {
 
   async function loadData() {
     try {
-      const [s, t, sys] = await Promise.all([
-        api.getStats(),
-        api.getThreats(10),
-        api.getSystemStatus(),
-      ]);
+      const [s, t, sys] = await Promise.all([api.getStats(), api.getThreats(10), api.getSystemStatus()]);
       setStats(s);
       setThreats(t);
       setSystemStatus(sys);
@@ -74,7 +72,12 @@ export default function Dashboard() {
   return (
     <>
       <div className="flex items-center justify-between mb-16">
-        <h1 className="page-title" style={{ marginBottom: 0 }}>Security Dashboard</h1>
+        <div>
+          <h1 className="page-title" style={{ marginBottom: 2 }}>Security Dashboard</h1>
+          <div style={{ fontSize: "0.75rem", color: "rgba(0,230,118,0.8)", fontWeight: 600, letterSpacing: "0.06em" }}>
+            SDG 3 · Protecting Patient Privacy in Real Time
+          </div>
+        </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           {systemStatus && <SystemStatusBadge status={systemStatus.status} />}
           <div className="status-bar" style={{ marginBottom: 0 }}>
@@ -91,10 +94,10 @@ export default function Dashboard() {
       )}
 
       <div className="grid grid-4" style={{ marginBottom: 24 }}>
-        <StatCard value={stats?.total_events} label="Total Events" />
-        <StatCard value={stats?.blocked} label="Threats Blocked" color="var(--danger)" />
-        <StatCard value={stats?.phi_leak_attempts} label="PHI Leak Attempts" color="var(--warn)" />
-        <StatCard value={stats?.critical_threats} label="Critical Threats" color="#ff2050" />
+        <StatCard value={stats?.total_events} label="Total Scans" sublabel="requests analyzed" />
+        <StatCard value={stats?.blocked} label="Threats Blocked" sublabel="patients protected" color="var(--danger)" />
+        <StatCard value={stats?.phi_leak_attempts} label="PHI Leaks Prevented" sublabel="privacy preserved" color="var(--warn)" />
+        <StatCard value={stats?.critical_threats} label="Critical Threats" sublabel="highest severity" color="#ff2050" />
       </div>
 
       {systemStatus && (
@@ -123,7 +126,7 @@ export default function Dashboard() {
           <div className="section-title">Recent Threats</div>
           <div className="threat-feed">
             {threats.length === 0 && (
-              <div style={{ color: "var(--text2)", fontSize: "0.85rem" }}>No threats recorded yet.</div>
+              <div style={{ color: "var(--text2)", fontSize: "0.85rem" }}>No threats recorded yet. Run a scan to begin.</div>
             )}
             {threats.map((t) => (
               <div key={t.id} className="feed-item">
@@ -136,6 +139,7 @@ export default function Dashboard() {
                   </div>
                   <div style={{ color: "var(--text2)", fontSize: "0.75rem", marginTop: 3 }}>
                     {t.source} · {new Date(t.timestamp).toLocaleTimeString()}
+                    {t.phi_detected && <span style={{ color: "var(--warn)", marginLeft: 6 }}>· PHI detected</span>}
                   </div>
                 </div>
               </div>
@@ -146,7 +150,7 @@ export default function Dashboard() {
         <div className="card">
           <div className="section-title">
             Live Alert Stream
-            {wsConnected && <span style={{ marginLeft: 8, fontSize: "0.72rem", color: "var(--safe)" }}>● connected</span>}
+            {wsConnected && <span style={{ marginLeft: 8, fontSize: "0.72rem", color: "var(--safe)" }}>● live</span>}
           </div>
           <div className="threat-feed">
             {alerts.length === 0 && (

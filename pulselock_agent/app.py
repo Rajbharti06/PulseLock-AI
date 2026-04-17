@@ -17,6 +17,7 @@ from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse
+from starlette.routing import Route
 
 from a2a.types import AgentCard, AgentCapabilities, AgentSkill
 from a2a.server.apps import A2AStarletteApplication
@@ -125,8 +126,20 @@ _handler = DefaultRequestHandler(
 )
 
 _a2a = A2AStarletteApplication(agent_card=_card, http_handler=_handler)
+
+
+async def _agent_card_v1(request: Request) -> JSONResponse:
+    """Return agent card in A2A v1 format with supportedInterfaces."""
+    card_dict = _card.model_dump(exclude_none=True)
+    card_dict["supportedInterfaces"] = [
+        {"url": _public_url, "protocolBinding": "JSONRPC", "protocolVersion": "1.0"}
+    ]
+    return JSONResponse(card_dict)
+
+
+_other_routes = [r for r in _a2a.routes() if getattr(r, "path", None) != _CARD_PATH]
 app = Starlette(
-    routes=_a2a.routes(),
+    routes=[Route(_CARD_PATH, endpoint=_agent_card_v1)] + _other_routes,
     middleware=[Middleware(ApiKeyMiddleware)],
 )
 

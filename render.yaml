@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: pulselock-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile.backend
+    plan: free
+    envVars:
+      - key: PYTHONPATH
+        value: /app
+    healthCheckPath: /ping
+
+  - type: web
+    name: pulselock-agent
+    runtime: docker
+    dockerfilePath: ./Dockerfile.agent
+    plan: free
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: PULSELOCK_URL
+        value: https://pulselock-backend.onrender.com
+      - key: AGENT_PORT
+        value: "8080"
+      - key: PULSELOCK_AGENT_PROTOCOL
+        value: https

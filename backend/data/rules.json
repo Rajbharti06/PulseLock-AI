@@ -1,0 +1,44 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-04-17T00:00:00Z",
+  "block_keywords": [
+    "send patient data urgently",
+    "immediate record transfer",
+    "urgent transfer now",
+    "export all records",
+    "bypass security",
+    "ignore rules",
+    "override policy",
+    "forward patient file",
+    "send medical data to"
+  ],
+  "phishing_indicators": [
+    "click here urgently",
+    "verify your credentials immediately",
+    "your account will be suspended",
+    "confirm patient details now",
+    "action required within",
+    "unauthorized access detected click"
+  ],
+  "phi_patterns": [
+    "patient id",
+    "medical record",
+    "date of birth",
+    "social security",
+    "diagnosis",
+    "prescription",
+    "insurance id",
+    "date of admission",
+    "discharge summary",
+    "lab result"
+  ],
+  "risk_threshold": 0.65,
+  "auto_block_threshold": 0.85,
+  "allowed_external_domains": [],
+  "rbac": {
+    "admin": ["read", "write", "export", "delete", "manage_rules"],
+    "doctor": ["read", "write", "export_internal"],
+    "analyst": ["read", "export_internal"],
+    "viewer": ["read"]
+  }
+}

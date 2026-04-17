@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-04-17T00:00:00Z",
+  "known_threat_signatures": [
+    {
+      "id": "PT-001",
+      "name": "Prompt Injection - Rule Bypass",
+      "patterns": ["ignore previous", "ignore all rules", "disregard instructions", "forget your instructions"],
+      "severity": "critical"
+    },
+    {
+      "id": "PT-002",
+      "name": "Data Exfiltration Intent",
+      "patterns": ["send to external", "upload to", "share with third party", "export outside"],
+      "severity": "high"
+    },
+    {
+      "id": "PT-003",
+      "name": "Credential Phishing",
+      "patterns": ["enter your password", "verify login", "confirm credentials", "re-authenticate here"],
+      "severity": "high"
+    },
+    {
+      "id": "PT-004",
+      "name": "Bulk Data Access Anomaly",
+      "patterns": ["all patients", "entire database", "full export", "download all records"],
+      "severity": "high"
+    },
+    {
+      "id": "PT-005",
+      "name": "Social Engineering",
+      "patterns": ["my name is dr", "i am the administrator", "ceo asked me to", "urgent request from management"],
+      "severity": "medium"
+    }
+  ]
+}

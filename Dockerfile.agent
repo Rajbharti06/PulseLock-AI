@@ -1,0 +1,8 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY agent_requirements.txt .
+RUN pip install --no-cache-dir -r agent_requirements.txt
+COPY pulselock_agent/ pulselock_agent/
+EXPOSE 8080
+ENV AGENT_PORT=8080
+CMD ["python", "-m", "pulselock_agent.app"]

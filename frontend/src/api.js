@@ -18,6 +18,7 @@ import {
   mockGetReports,
   mockGetEvolution,
   mockGetRules,
+  mockGetChartData,
 } from "./mockEngine";
 
 export const api = {
@@ -32,6 +33,7 @@ export const api = {
   triggerLearning: () => mockTriggerLearning(),
   triggerReport:   () => mockTriggerReport(),
   getReports:   () => mockGetReports(),
+  getChartData: () => mockGetChartData(),
   getHealth:    () => Promise.resolve({ status: "online", mode: "demo" }),
   getRules:     () => mockGetRules(),
   getSystemStatus: () => mockGetSystemStatus(),

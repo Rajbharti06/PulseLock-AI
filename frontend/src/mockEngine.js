@@ -509,6 +509,54 @@ export async function mockGetEvolution() {
   return ruleEvolutions;
 }
 
+// ── Chart / Analytics Data ────────────────────────────────────────
+export async function mockGetChartData() {
+  await delay(100);
+
+  // Threat type breakdown
+  const typeCounts = {};
+  threatLog.forEach((t) => {
+    if (t.threat_type) typeCounts[t.threat_type] = (typeCounts[t.threat_type] || 0) + 1;
+  });
+
+  // 24-hour hourly activity (real + synthetic baseline for visual richness)
+  const hourlyActivity = [];
+  for (let h = 23; h >= 0; h--) {
+    const start = Date.now() - (h + 1) * 3600000;
+    const end = Date.now() - h * 3600000;
+    const realCount = threatLog.filter((t) => {
+      const ts = new Date(t.timestamp).getTime();
+      return ts >= start && ts < end;
+    }).length;
+    const hourOfDay = new Date(end).getHours();
+    const synthetic =
+      hourOfDay >= 8 && hourOfDay <= 18
+        ? Math.floor(Math.random() * 5) + 1
+        : Math.floor(Math.random() * 2);
+    hourlyActivity.push(realCount + synthetic);
+  }
+  // Spike recent hours so the chart looks active
+  if (hourlyActivity.length >= 3) {
+    hourlyActivity[hourlyActivity.length - 1] += 4;
+    hourlyActivity[hourlyActivity.length - 2] += 2;
+  }
+
+  const actions = {
+    BLOCK: threatLog.filter((t) => t.action_taken === "BLOCK").length,
+    DELETE: threatLog.filter((t) => t.action_taken === "DELETE").length,
+    QUARANTINE: threatLog.filter((t) => t.action_taken === "QUARANTINE").length,
+    WARN: threatLog.filter((t) => t.action_taken === "WARN").length,
+    ALLOW: threatLog.filter((t) => t.action_taken === "ALLOW").length,
+  };
+
+  return {
+    typeCounts,
+    hourlyActivity, // 24 values, index 0 = 23h ago, index 23 = now
+    actions,
+    totalBlocked: actions.BLOCK + actions.DELETE + actions.QUARANTINE,
+  };
+}
+
 export async function mockGetRules() {
   await delay(150);
   return {

@@ -109,9 +109,15 @@ export default function App() {
         <div className="topbar-sep" />
         <span className="topbar-title">{PAGE_TITLES[page]}</span>
         <div style={{ flex: 1 }} />
-        <div className="chip chip-green" style={{ fontSize: "0.65rem" }}>
-          <div className="pulse-dot" style={{ width: 6, height: 6 }} />
-          PROTECTED
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: "0.72rem", color: "var(--text2)" }}>
+            Monitoring healthcare systems in real time
+          </span>
+          <div className="topbar-sep" />
+          <div className="chip chip-green" style={{ fontSize: "0.65rem" }}>
+            <div className="pulse-dot" style={{ width: 6, height: 6 }} />
+            PROTECTED
+          </div>
         </div>
       </div>
 

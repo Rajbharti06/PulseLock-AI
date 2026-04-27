@@ -530,10 +530,44 @@ export async function mockGetRules() {
 export async function mockLogin(username, password) {
   await delay(700);
   if (username === "admin" && password === "admin123") {
+    preloadDemoData();
     return { access_token: "mock-jwt-token-pulselock-secure", role: "admin" };
   }
   if (username === "doctor" && password === "doctor123") {
+    preloadDemoData();
     return { access_token: "mock-jwt-token-doctor", role: "doctor" };
   }
   throw new Error("Invalid credentials");
+}
+
+// ── Pre-seed realistic threat history on login ─────────────────────
+function preloadDemoData() {
+  if (threatLog.length > 0) return; // already seeded
+
+  const ago = (minutes) => new Date(Date.now() - minutes * 60000).toISOString();
+
+  const preseeded = [
+    { id: uid(), timestamp: ago(58), action_taken: "BLOCK", severity: "critical", threat_type: "prompt_injection", source: "agent:ExternalAgent", phi_detected: true, reason: "Prompt injection attempt intercepted — agent tried to override security rules and export all records." },
+    { id: uid(), timestamp: ago(51), action_taken: "BLOCK", severity: "high", threat_type: "phi_exfiltration", source: "upload", phi_detected: true, reason: "Patient health records detected in outbound transfer to external-analytics.com — blocked." },
+    { id: uid(), timestamp: ago(44), action_taken: "DELETE", severity: "critical", threat_type: "phishing_email", source: "email", phi_detected: false, reason: "High-confidence phishing email deleted: suspicious domain + credential harvesting + urgency pattern." },
+    { id: uid(), timestamp: ago(38), action_taken: "BLOCK", severity: "high", threat_type: "bulk_data_request", source: "api", phi_detected: true, reason: "Bulk patient record export attempt blocked — unauthorized mass data extraction detected." },
+    { id: uid(), timestamp: ago(29), action_taken: "QUARANTINE", severity: "medium", threat_type: "suspicious_email", source: "email", phi_detected: false, reason: "Suspicious email quarantined: unverified sender domain and urgency language detected." },
+    { id: uid(), timestamp: ago(22), action_taken: "WARN", severity: "medium", threat_type: "phishing_pattern", source: "message", phi_detected: false, reason: "Phishing-style language detected in internal message. User advised to verify before proceeding." },
+    { id: uid(), timestamp: ago(15), action_taken: "BLOCK", severity: "high", threat_type: "phi_exfiltration", source: "api", phi_detected: true, reason: "PHI detected in API payload directed to external endpoint — transfer blocked, data secured." },
+    { id: uid(), timestamp: ago(8), action_taken: "ALLOW", severity: "safe", threat_type: null, source: "ui", phi_detected: false, reason: "Content cleared — no PHI, no threat patterns. Safe to proceed." },
+    { id: uid(), timestamp: ago(3), action_taken: "BLOCK", severity: "critical", threat_type: "prompt_injection", source: "agent:CompromisedAgent", phi_detected: true, reason: "Rogue AI agent attempted bypass of all security rules. Request denied and agent flagged." },
+    { id: uid(), timestamp: ago(1), action_taken: "ALLOW", severity: "safe", threat_type: null, source: "ui", phi_detected: false, reason: "Authorized doctor request verified — patient vitals access granted within secure network." },
+  ];
+
+  threatLog.push(...preseeded);
+  scanCount = preseeded.length;
+
+  ruleEvolutions.push({
+    id: uid(),
+    timestamp: ago(45),
+    rule_type: "pattern_learned",
+    change_description: "New attack pattern catalogued: \"phi exfiltration\" — detection sensitivity increased by 15%",
+    triggered_by: "phi_exfiltration",
+    confidence: 0.88,
+  });
 }

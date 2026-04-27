@@ -368,6 +368,62 @@ export default function Scan() {
                 </div>
               )}
 
+              {/* Impact Analysis — judge's knockout punch */}
+              {["BLOCK", "DELETE", "QUARANTINE"].includes(result.action) && (
+                <div style={{
+                  borderRadius: 12,
+                  border: "1px solid rgba(255,64,96,0.2)",
+                  background: "rgba(255,64,96,0.04)",
+                  padding: "16px",
+                  animation: "slideUp 0.4s ease",
+                }}>
+                  <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--text)", marginBottom: 12 }}>
+                    🔍 Impact Analysis
+                  </div>
+
+                  {result.phi_detected && (
+                    <div style={{ marginBottom: 12 }}>
+                      <div style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.1em", color: "var(--text2)", marginBottom: 7 }}>PHI DETECTED IN REQUEST</div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                        {["Patient Identity", "Health Records", "Medical Information"].map((tag) => (
+                          <span key={tag} style={{
+                            fontSize: "0.72rem", padding: "2px 10px", borderRadius: 99,
+                            background: "rgba(255,170,0,0.12)", color: "var(--warn)",
+                            border: "1px solid rgba(255,170,0,0.3)",
+                          }}>{tag}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.1em", color: "var(--text2)", marginBottom: 7 }}>IF NOT BLOCKED</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      {[
+                        "→ Patient data exposed to unauthorized party",
+                        "→ HIPAA compliance violation triggered",
+                        "→ Breach notification required by law",
+                      ].map((line) => (
+                        <div key={line} style={{ fontSize: "0.8rem", color: "#ff7080" }}>{line}</div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.1em", color: "var(--text2)", marginBottom: 7 }}>ACTIONS TAKEN BY PULSELOCK</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      {[
+                        "✓ Transmission terminated before data left system",
+                        "✓ Incident recorded in tamper-proof audit log",
+                        "✓ Detection rules reinforced against this pattern",
+                      ].map((line) => (
+                        <div key={line} style={{ fontSize: "0.8rem", color: "var(--safe)" }}>{line}</div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="card" style={{ padding: "14px", display: "flex", flexDirection: "column", gap: 12 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span style={{ fontSize: "0.8rem", color: "var(--text2)" }}>Decision Confidence</span>

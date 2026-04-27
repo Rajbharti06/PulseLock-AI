@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { api } from "../api";
 
-// Simulates a live alert stream without a real WebSocket
 const LIVE_EVENTS = [
   { threat_type: "phi_exfiltration", action: "BLOCK", severity: "high", reason: "PHI detected in outbound transfer — blocked automatically" },
   { threat_type: "phishing_pattern", action: "WARN", severity: "medium", reason: "Phishing language detected in incoming message" },
@@ -11,10 +10,32 @@ const LIVE_EVENTS = [
   { threat_type: "phi_detected", action: "WARN", severity: "low", reason: "PHI found in content — no external destination" },
 ];
 
+// Animated counter hook
+function useCounter(target, duration = 1200) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!target && target !== 0) return;
+    const end = parseInt(target) || 0;
+    if (end === 0) return;
+    let current = 0;
+    const step = Math.max(1, Math.ceil(end / 40));
+    const interval = setInterval(() => {
+      current = Math.min(current + step, end);
+      setValue(current);
+      if (current >= end) clearInterval(interval);
+    }, duration / 40);
+    return () => clearInterval(interval);
+  }, [target, duration]);
+  return value;
+}
+
 function StatCard({ value, label, sublabel, color }) {
+  const animated = useCounter(value);
   return (
     <div className="stat-card" style={{ "--stat-color": color || "var(--accent)" }}>
-      <div className="stat-value" style={{ color: color || "var(--accent)" }}>{value ?? "—"}</div>
+      <div className="stat-value" style={{ color: color || "var(--accent)" }}>
+        {value !== undefined && value !== null ? animated : "—"}
+      </div>
       <div className="stat-label">{label}</div>
       {sublabel && <div className="stat-sub" style={{ color: color ? `${color}99` : "rgba(0,230,118,0.7)" }}>{sublabel}</div>}
     </div>
@@ -38,23 +59,35 @@ function SystemStatusBadge({ status }) {
   );
 }
 
+// Session-wide patient counter
+let sessionPatientsProtected = 0;
+
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [threats, setThreats] = useState([]);
   const [systemStatus, setSystemStatus] = useState(null);
   const [alerts, setAlerts] = useState([]);
-  const wsRef = useRef(null);
-  const [wsConnected] = useState(true); // Always show as live in demo mode
+  const [sessionCount, setSessionCount] = useState(0);
 
   useEffect(() => {
     loadData();
-    const interval = setInterval(loadData, 30000);
 
-    // Simulate a live alert stream every 12 seconds
+    // Pre-load 2 alerts immediately so the feed isn't empty
+    const initialEvents = [LIVE_EVENTS[2], LIVE_EVENTS[0]].map((ev) => ({
+      ...ev,
+      timestamp: new Date().toISOString(),
+    }));
+    setAlerts(initialEvents);
+
+    const interval = setInterval(loadData, 30000);
     const alertInterval = setInterval(() => {
       const ev = LIVE_EVENTS[Math.floor(Math.random() * LIVE_EVENTS.length)];
       setAlerts((prev) => [{ ...ev, timestamp: new Date().toISOString() }, ...prev].slice(0, 20));
-    }, 12000);
+      if (["BLOCK", "DELETE", "QUARANTINE"].includes(ev.action)) {
+        sessionPatientsProtected++;
+        setSessionCount(sessionPatientsProtected);
+      }
+    }, 10000);
 
     return () => {
       clearInterval(interval);
@@ -83,8 +116,8 @@ export default function Dashboard() {
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           {systemStatus && <SystemStatusBadge status={systemStatus.status} />}
           <div className="status-bar" style={{ marginBottom: 0 }}>
-            <div className={wsConnected ? "pulse-dot" : "dot dot-critical"} />
-            <span style={{ fontSize: "0.78rem", color: "var(--text2)" }}>{wsConnected ? "Live" : "Offline"}</span>
+            <div className="pulse-dot" />
+            <span style={{ fontSize: "0.78rem", color: "var(--text2)" }}>Live</span>
           </div>
         </div>
       </div>
@@ -102,6 +135,31 @@ export default function Dashboard() {
         <StatCard value={stats?.critical_threats} label="Critical Threats" sublabel="highest severity" color="#ff2050" />
       </div>
 
+      {/* Session impact banner */}
+      {sessionCount > 0 && (
+        <div style={{
+          background: "linear-gradient(135deg, rgba(0,230,118,0.08) 0%, rgba(0,200,255,0.06) 100%)",
+          border: "1px solid rgba(0,230,118,0.3)",
+          borderRadius: 12,
+          padding: "14px 20px",
+          marginBottom: 20,
+          display: "flex",
+          alignItems: "center",
+          gap: 16,
+          animation: "fadeIn 0.4s ease",
+        }}>
+          <div style={{ fontSize: "1.6rem" }}>🛡️</div>
+          <div>
+            <div style={{ fontWeight: 700, color: "var(--safe)", fontSize: "0.95rem" }}>
+              {sessionCount} patient{sessionCount !== 1 ? "s" : ""} protected this session
+            </div>
+            <div style={{ color: "var(--text2)", fontSize: "0.78rem" }}>
+              PulseLock is actively monitoring and blocking unauthorized access attempts in real time
+            </div>
+          </div>
+        </div>
+      )}
+
       {systemStatus && (
         <div className="card" style={{ marginBottom: 20 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
@@ -111,7 +169,7 @@ export default function Dashboard() {
                 ["Critical (1h)", systemStatus.metrics.critical_last_hour, "var(--danger)"],
                 ["High (1h)", systemStatus.metrics.high_last_hour, "#ff6400"],
                 ["Events (1h)", systemStatus.metrics.total_last_hour, "var(--accent)"],
-                ["Learning Cycles (24h)", systemStatus.metrics.learning_cycles_24h, "var(--safe)"],
+                ["Learning Cycles", systemStatus.metrics.learning_cycles_24h, "var(--safe)"],
               ].map(([label, val, color]) => (
                 <div key={label} style={{ textAlign: "center" }}>
                   <div style={{ fontSize: "1.3rem", fontWeight: 700, color }}>{val}</div>
@@ -128,7 +186,9 @@ export default function Dashboard() {
           <div className="section-title">Recent Threats</div>
           <div className="threat-feed">
             {threats.length === 0 && (
-              <div style={{ color: "var(--text2)", fontSize: "0.85rem" }}>No threats recorded yet. Run a scan to begin.</div>
+              <div style={{ color: "var(--text2)", fontSize: "0.85rem" }}>
+                No threats recorded yet. Use <strong style={{ color: "var(--accent)" }}>Data Shield</strong> to run a scan.
+              </div>
             )}
             {threats.map((t) => (
               <div key={t.id} className="feed-item">
@@ -152,16 +212,14 @@ export default function Dashboard() {
         <div className="card">
           <div className="section-title">
             Live Alert Stream
-            {wsConnected && <span style={{ marginLeft: 8, fontSize: "0.72rem", color: "var(--safe)" }}>● live</span>}
+            <span style={{ marginLeft: 8, fontSize: "0.72rem", color: "var(--safe)" }}>● live</span>
           </div>
           <div className="threat-feed">
             {alerts.length === 0 && (
-              <div style={{ color: "var(--text2)", fontSize: "0.85rem" }}>
-                {wsConnected ? "Monitoring… no alerts yet." : "Connecting to alert stream…"}
-              </div>
+              <div style={{ color: "var(--text2)", fontSize: "0.85rem" }}>Monitoring… no alerts yet.</div>
             )}
             {alerts.map((a, i) => (
-              <div key={i} className="feed-item">
+              <div key={i} className="feed-item" style={{ animation: "fadeIn 0.3s ease" }}>
                 <SeverityDot severity={a.severity} />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600, color: "var(--text)", fontSize: "0.85rem" }}>

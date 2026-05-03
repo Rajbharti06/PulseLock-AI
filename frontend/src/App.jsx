@@ -2,45 +2,46 @@ import { useState } from "react";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import DataShieldMode from "./pages/DataShieldMode";
-import Scan from "./pages/Scan";
+import PulseLab from "./pages/PulseLab";
 import Incidents from "./pages/Incidents";
 import Reports from "./pages/Reports";
 import EmailScan from "./pages/EmailScan";
 import AgentSim from "./pages/AgentSim";
 import Impact from "./pages/Impact";
 import TopBar from "./components/TopBar";
+import NavProvider from "./nav/NavProvider";
 
 const NAV = [
   {
     section: "Overview",
     items: [
-      { id: "datashield", label: "Data Shield Mode",  icon: "🛡️" },
-      { id: "impact",     label: "Mission",           icon: "◎" },
-      { id: "dashboard",  label: "Dashboard",         icon: "▦" },
+      { id: "impact", label: "Mission (SDG 3)", icon: "◎" },
+      { id: "dashboard", label: "Security Dashboard", icon: "▦" },
+      { id: "datashield", label: "Data Shield Demo", icon: "🛡️" },
     ],
   },
   {
     section: "Protection",
     items: [
-      { id: "scan",       label: "Data Shield (Legacy)",icon: "⬡" },
-      { id: "email",      label: "Email Guard",       icon: "✉" },
-      { id: "agents",     label: "AI Security Gate",  icon: "⟳" },
+      { id: "scan", label: "Threat Analyzer", icon: "⬡" },
+      { id: "email", label: "Email Guard", icon: "✉" },
+      { id: "agents", label: "AI Security Gate (A2A)", icon: "⟳" },
     ],
   },
   {
     section: "Intelligence",
     items: [
-      { id: "incidents",  label: "Threat Log",        icon: "◈" },
-      { id: "reports",    label: "Intelligence",      icon: "◆" },
+      { id: "incidents", label: "Threat Log", icon: "◈" },
+      { id: "reports", label: "Intelligence", icon: "◆" },
     ],
   },
 ];
 
 const PAGE_TITLES = {
-  datashield: "Data Shield Mode",
+  datashield: "Data Shield Demo",
   impact: "Mission",
   dashboard: "Security Dashboard",
-  scan: "Data Shield (Legacy)",
+  scan: "Threat Analyzer",
   email: "Email Guard",
   agents: "AI Security Gate",
   incidents: "Threat Log",
@@ -51,7 +52,7 @@ const PAGE_MAP = {
   datashield: DataShieldMode,
   impact: Impact,
   dashboard: Dashboard,
-  scan: Scan,
+  scan: PulseLab,
   email: EmailScan,
   agents: AgentSim,
   incidents: Incidents,
@@ -60,7 +61,7 @@ const PAGE_MAP = {
 
 export default function App() {
   const [token, setToken] = useState(() => localStorage.getItem("token"));
-  const [page, setPage] = useState("datashield");
+  const [page, setPage] = useState("impact");
 
   function handleLogin(tok) {
     localStorage.setItem("token", tok);
@@ -75,13 +76,15 @@ export default function App() {
 
   if (!token) return <Login onLogin={handleLogin} />;
 
-  const PageComponent = PAGE_MAP[page] || DataShieldMode;
+  const PageComponent = PAGE_MAP[page] || Impact;
+
+  const navValue = { go: setPage, page, titles: PAGE_TITLES };
 
   return (
+    <NavProvider value={navValue}>
     <div className="app" style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw' }}>
       <TopBar />
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-      {page !== "datashield" && (
         <aside className="sidebar">
         <div className="sidebar-header">
           <div className="sidebar-logo">
@@ -111,12 +114,12 @@ export default function App() {
                         fontWeight: 700,
                         padding: "1px 6px",
                         borderRadius: 99,
-                        background: "rgba(0,255,156,0.15)",
-                        color: "#00FF9C",
+                        background: "rgba(255,59,59,0.18)",
+                        color: "#ff6b6b",
                         letterSpacing: "0.06em",
                       }}
                     >
-                      LIVE
+                      DEMO
                     </span>
                   )}
                 </div>
@@ -135,24 +138,46 @@ export default function App() {
           </div>
         </div>
       </aside>
-      )}
 
       <main 
-        className="main" 
+        className="main app-main-with-sidebar" 
         style={{ 
           flex: 1, 
           display: 'flex', 
           flexDirection: 'column', 
-          overflow: 'hidden', 
+          overflow: 'auto', 
           position: 'relative',
-          marginLeft: page === 'datashield' ? 0 : '228px',
-          paddingTop: page === 'datashield' ? '28px' : '80px',
-          padding: '28px'
+          marginLeft: '228px',
+          paddingTop: '72px',
+          paddingLeft: '28px',
+          paddingRight: '28px',
+          paddingBottom: '28px',
+          minWidth: 0,
         }}
       >
-        <PageComponent />
+        {page !== "datashield" && (
+        <div
+          className="page-header-bar"
+          style={{
+            marginBottom: 16,
+            paddingBottom: 12,
+            borderBottom: '1px solid var(--border)',
+          }}
+        >
+          <div style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em', color: 'var(--text3)', textTransform: 'uppercase' }}>
+            Active module
+          </div>
+          <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text)' }}>
+            {PAGE_TITLES[page] || "PulseLock"}
+          </div>
+        </div>
+        )}
+        <div style={{ flex: 1, minHeight: 0 }}>
+          <PageComponent />
+        </div>
       </main>
       </div>
     </div>
+    </NavProvider>
   );
 }

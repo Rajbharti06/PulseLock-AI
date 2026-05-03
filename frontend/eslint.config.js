@@ -24,6 +24,8 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // Too strict for common data-fetch + orchestration UX (timeouts, loaders).
+      'react-hooks/set-state-in-effect': 'off',
     },
   },
 ])

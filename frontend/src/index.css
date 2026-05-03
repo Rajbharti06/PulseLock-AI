@@ -735,7 +735,20 @@ textarea.input {
 .cinematic-topbar-left {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.cinematic-topbar-gnec {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(15, 23, 42, 0.6);
 }
 
 .cinematic-topbar-sys {
@@ -755,6 +768,35 @@ textarea.input {
   align-items: center;
   color: #FF3B3B;
   font-weight: bold;
+}
+
+.cinematic-topbar--with-sidebar {
+  padding-left: calc(228px + 24px);
+}
+
+@media (max-width: 840px) {
+  .cinematic-topbar--with-sidebar {
+    padding-left: 24px;
+  }
+}
+
+/* ── PulseLab (Threat Analyzer) responsive grid ───────────────────── */
+.pulse-lab-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1050px) {
+  .pulse-lab-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pulse-lab-sidebar {
+    position: static !important;
+    top: auto !important;
+  }
 }
 
 /* ── Data Shield Mode ───────────────────────── */

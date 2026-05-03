@@ -8,19 +8,24 @@ export default function LogsPanel({ logs, visible }) {
 
   useEffect(() => {
     if (!visible || !logs || logs.length === 0) {
-      setDisplayedLogs([]);
-      setCurrentTyping(-1);
-      setTypedText("");
-      return;
+      const id = window.setTimeout(() => {
+        setDisplayedLogs([]);
+        setCurrentTyping(-1);
+        setTypedText("");
+      }, 0);
+      return () => clearTimeout(id);
     }
 
-    setDisplayedLogs([]);
-    setCurrentTyping(0);
-    setTypedText("");
+    const resetId = window.setTimeout(() => {
+      setDisplayedLogs([]);
+      setCurrentTyping(0);
+      setTypedText("");
+    }, 0);
 
     let logIndex = 0;
     let charIndex = 0;
     let cancelled = false;
+    const chainTimeouts = [];
 
     function typeNext() {
       if (cancelled) return;
@@ -34,23 +39,25 @@ export default function LogsPanel({ logs, visible }) {
         setCurrentTyping(logIndex);
         setTypedText(currentLog.slice(0, charIndex));
         charIndex++;
-        setTimeout(typeNext, 25 + Math.random() * 15);
+        chainTimeouts.push(
+          window.setTimeout(typeNext, 25 + Math.random() * 15),
+        );
       } else {
-        // Finished typing this log
         setDisplayedLogs((prev) => [...prev, currentLog]);
         logIndex++;
         charIndex = 0;
         setTypedText("");
-        setTimeout(typeNext, 200);
+        chainTimeouts.push(window.setTimeout(typeNext, 200));
       }
     }
 
-    // Start typing after a small delay
-    const startDelay = setTimeout(() => typeNext(), 600);
+    const startDelay = window.setTimeout(() => typeNext(), 600);
+    chainTimeouts.push(startDelay);
 
     return () => {
       cancelled = true;
-      clearTimeout(startDelay);
+      clearTimeout(resetId);
+      chainTimeouts.forEach((t) => clearTimeout(t));
     };
   }, [visible, logs]);
 

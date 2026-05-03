@@ -1,4 +1,17 @@
+import { useAppNav } from "../nav/useAppNav";
+import GnecJudgePanel from "../components/GnecJudgePanel";
+
+const DEMO_STEPS = [
+  { id: "scan", label: "2 · Threat Analyzer", hint: 'PHI leak → "Analyze Risk"' },
+  { id: "email", label: "3 · Email Guard", hint: "Load phishing · Analyze" },
+  { id: "agents", label: "4 · AI Security Gate", hint: "Agent clearance demo" },
+  { id: "reports", label: "5 · Intelligence", hint: "Run learning cycle" },
+  { id: "datashield", label: "Cinematic", hint: "Full auto attack sequence" },
+];
+
 export default function Impact() {
+  const { go } = useAppNav();
+
   const crisisStats = [
     { number: "40M+", label: "Patient records exposed per year", sub: "IBM Cost of a Data Breach 2024" },
     { number: "$10.9M", label: "Average cost of a healthcare breach", sub: "Highest of any industry — IBM Security" },
@@ -66,7 +79,39 @@ export default function Impact() {
           destroy trust in healthcare institutions, and directly harm vulnerable people.
           PulseLock is an autonomous AI security layer that ensures that data stays protected, private, and trusted — in real time.
         </div>
+
+        <div
+          className="card"
+          style={{
+            marginTop: 24,
+            background: "rgba(0,200,255,0.06)",
+            borderColor: "rgba(0,200,255,0.28)",
+          }}
+        >
+          <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--accent)", marginBottom: 10 }}>
+            Recommended GNEC demo path (~3 minutes on video)
+          </div>
+          <div style={{ fontSize: "0.8rem", color: "var(--text2)", marginBottom: 14, lineHeight: 1.6 }}>
+            Step 1: Mission (you are here) — framing for SDG 3 jurors. Then use shortcuts or sidebar for Analyzer → Guards → Intelligence → cinematic Data Shield.
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {DEMO_STEPS.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={() => go(s.id)}
+                title={s.hint}
+                style={{ fontSize: "0.76rem" }}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
+
+      <GnecJudgePanel />
 
       {/* Crisis Stats */}
       <div style={{ marginBottom: 8 }}>
@@ -182,6 +227,36 @@ export default function Impact() {
         }}>
           <strong style={{ color: "var(--text)" }}>Deployment reality:</strong> PulseLock runs fully free on Render.com (backend + AI agent) and GitHub Pages (dashboard). No cloud billing required. A rural hospital with internet access can deploy this today.
         </div>
+      </div>
+
+      <div
+        style={{
+          marginTop: 32,
+          padding: "16px 20px",
+          borderRadius: 12,
+          border: "1px dashed var(--border)",
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          fontSize: "0.78rem",
+          color: "var(--text3)",
+        }}
+      >
+        <span>
+          GNEC Devpost: submit <strong style={{ color: "var(--text2)" }}>2–5 min video</strong>,{" "}
+          <strong style={{ color: "var(--text2)" }}>source ZIP</strong> + optional slides — see{" "}
+          <code style={{ color: "var(--accent)" }}>docs/GNEC-SUBMISSION.md</code> on GitHub.
+        </span>
+        <a
+          className="btn btn-ghost btn-sm"
+          href="https://github.com/Rajbharti06/PulseLock-AI"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Repository
+        </a>
       </div>
     </>
   );

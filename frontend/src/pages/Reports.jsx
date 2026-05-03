@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { api } from "../api";
 
 const EVO_COLORS = {
@@ -100,24 +100,35 @@ export default function Reports() {
   const [evolution, setEvolution] = useState([]);
   const [evoLoading, setEvoLoading] = useState(false);
 
-  useEffect(() => { loadReports(); }, []);
-  useEffect(() => { if (tab === "evolution" && evolution.length === 0) loadEvolution(); }, [tab]);
-
-  async function loadReports() {
+  const loadReports = useCallback(async () => {
     setLoading(true);
     try {
       const data = await api.getReports();
       setReports(data);
       if (data.length > 0) setSelected(data[0].id);
-    } catch {}
+    } catch (e) {
+      console.warn("PulseLock reports failed", e);
+    }
     setLoading(false);
-  }
+  }, []);
 
-  async function loadEvolution() {
+  const loadEvolution = useCallback(async () => {
     setEvoLoading(true);
-    try { setEvolution(await api.getEvolution()); } catch {}
+    try {
+      setEvolution(await api.getEvolution());
+    } catch (e) {
+      console.warn("PulseLock evolution fetch failed", e);
+    }
     setEvoLoading(false);
-  }
+  }, []);
+
+  useEffect(() => {
+    void loadReports();
+  }, [loadReports]);
+
+  useEffect(() => {
+    if (tab === "evolution") void loadEvolution();
+  }, [tab, loadEvolution]);
 
   async function generate() {
     setGenerating(true);
@@ -125,7 +136,9 @@ export default function Reports() {
       const r = await api.triggerReport();
       setReports((prev) => [r, ...prev]);
       setSelected(r.id);
-    } catch {}
+    } catch (e) {
+      console.warn("PulseLock report generation failed", e);
+    }
     setGenerating(false);
   }
 
@@ -134,8 +147,13 @@ export default function Reports() {
     try {
       const r = await api.triggerLearning();
       setLearningResult(r);
-      if (r.evolutions?.length > 0) { await loadEvolution(); setTab("evolution"); }
-    } catch {}
+      if (r.evolutions?.length > 0) {
+        await loadEvolution();
+        setTab("evolution");
+      }
+    } catch (e) {
+      console.warn("PulseLock learning cycle failed", e);
+    }
     setLearning(false);
   }
 
@@ -268,7 +286,7 @@ export default function Reports() {
               }} />
 
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                {evolution.map((e, idx) => {
+                {evolution.map((e) => {
                   const color = EVO_COLORS[e.rule_type] || "var(--accent)";
                   return (
                     <div key={e.id} style={{ display: "flex", gap: 16, position: "relative" }}>

@@ -15,7 +15,13 @@ export default function Login({ onLogin }) {
       const data = await api.login(username, password);
       onLogin(data.access_token);
     } catch (err) {
-      setError("Invalid credentials. Use demo: admin / admin123");
+      const m = typeof err?.message === "string" ? err.message : "";
+      const looksNetwork = /fail|fetch|network|Load failed/i.test(m);
+      setError(
+        looksNetwork
+          ? "Demo login runs in the browser. Hard-refresh (Ctrl+F5), then use admin / admin123. Ensure the latest build is deployed from main."
+          : "Invalid credentials. Use demo: admin / admin123",
+      );
     } finally {
       setLoading(false);
     }
@@ -39,6 +45,19 @@ export default function Login({ onLogin }) {
           background: "rgba(0,230,118,0.1)", border: "1px solid rgba(0,230,118,0.25)",
           padding: "5px 14px", borderRadius: 99, marginBottom: 24,
         }}>UN SDG 3 · GOOD HEALTH & WELL-BEING</div>
+
+        <div
+          style={{
+            fontSize: "0.7rem",
+            fontWeight: 600,
+            letterSpacing: "0.08em",
+            color: "var(--text2)",
+            textTransform: "uppercase",
+            marginBottom: 12,
+          }}
+        >
+          GNEC Hackathon 2026 Spring — Health & sustainability through trustworthy systems
+        </div>
 
         <div style={{ fontSize: "2rem", fontWeight: 800, color: "var(--text)", lineHeight: 1.3, marginBottom: 16 }}>
           Autonomous AI Defense<br />for Healthcare Systems

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { api } from "../api";
 
 const SEVERITIES = ["all", "critical", "high", "medium", "low", "safe"];
@@ -118,21 +118,29 @@ export default function Incidents() {
   const [auditLoading, setAuditLoading] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  useEffect(() => { load(); }, [filter]);
-
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
       const data = await api.getThreats(100, filter === "all" ? null : filter);
       setThreats(data);
       setSelected(null);
-    } catch {}
+    } catch (e) {
+      console.warn("PulseLock threat log failed", e);
+    }
     setLoading(false);
-  }
+  }, [filter]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   async function runAudit() {
     setAuditLoading(true);
-    try { setAudit(await api.runAudit()); } catch {}
+    try {
+      setAudit(await api.runAudit());
+    } catch (e) {
+      console.warn("PulseLock audit failed", e);
+    }
     setAuditLoading(false);
   }
 

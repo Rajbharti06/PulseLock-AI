@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 const IMPACT_ITEMS = [
   {
@@ -31,29 +31,43 @@ const SAFE_ITEMS = [
 ];
 
 export default function ImpactPanel({ result, visible }) {
-  const [showItems, setShowItems] = useState([]);
+  const [revealedCount, setRevealedCount] = useState(0);
 
   const isBlocked =
-    result &&
+    !!result &&
     ["BLOCK", "QUARANTINE", "DELETE"].includes(result.decision);
-  const items = isBlocked ? (result.impact || IMPACT_ITEMS.map((i) => i.label)).map((text, idx) => ({
-    ...IMPACT_ITEMS[idx % IMPACT_ITEMS.length],
-    label: text,
-  })) : SAFE_ITEMS;
+
+  const items = useMemo(() => {
+    if (!result) return SAFE_ITEMS;
+    if (!["BLOCK", "QUARANTINE", "DELETE"].includes(result.decision)) {
+      return SAFE_ITEMS;
+    }
+    const labels = result.impact || IMPACT_ITEMS.map((i) => i.label);
+    return labels.map((text, idx) => ({
+      ...IMPACT_ITEMS[idx % IMPACT_ITEMS.length],
+      label: text,
+    }));
+  }, [result]);
+
+  const itemKey = useMemo(
+    () => items.map((i) => i.label).join("|"),
+    [items],
+  );
 
   useEffect(() => {
     if (!visible) {
-      setShowItems([]);
-      return;
+      const id = window.setTimeout(() => setRevealedCount(0), 0);
+      return () => clearTimeout(id);
     }
-
-    setShowItems([]);
+    const timers = [];
+    timers.push(window.setTimeout(() => setRevealedCount(0), 0));
     items.forEach((_, i) => {
-      setTimeout(() => {
-        setShowItems((prev) => [...prev, i]);
-      }, 400 + i * 300);
+      timers.push(
+        window.setTimeout(() => setRevealedCount(i + 1), 400 + i * 300),
+      );
     });
-  }, [visible, result?.decision]);
+    return () => timers.forEach((t) => clearTimeout(t));
+  }, [visible, itemKey, items]);
 
   if (!visible || !result) return null;
 
@@ -94,10 +108,9 @@ export default function ImpactPanel({ result, visible }) {
               borderRadius: 10,
               background: "rgba(0,0,0,0.25)",
               border: `1px solid ${item.color}30`,
-              opacity: showItems.includes(i) ? 1 : 0,
-              transform: showItems.includes(i)
-                ? "translateX(0)"
-                : "translateX(-20px)",
+              opacity: i < revealedCount ? 1 : 0,
+              transform:
+                i < revealedCount ? "translateX(0)" : "translateX(-20px)",
               transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
             }}
           >

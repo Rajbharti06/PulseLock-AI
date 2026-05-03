@@ -121,7 +121,9 @@ export default function Scan() {
         setResult(r);
         const isBlocked = ["BLOCK", "DELETE", "QUARANTINE"].includes(r.action);
       setDemoResults((prev) => [...prev, { ...r, label: scenario.label, icon: isBlocked ? "🔴" : "🟢" }]);
-      } catch {}
+      } catch (e) {
+        console.warn("PulseLock demo scan failed", e);
+      }
 
       setLoading(false);
 

@@ -1,10 +1,27 @@
 # 🛡️ PulseLock AI — Autonomous Healthcare Cyber Defense
 
-> **UN SDG 3: Good Health and Well-Being**  
-> Protecting patient privacy and healthcare systems through autonomous, real-time AI defense.
+> **GNEC Hackathon 2026 Spring** · Theme: **UN SDG 3 — Good Health & Well-Being**  
+> Autonomous AI that blocks healthcare data breaches **before** they happen — preserving trust, care continuity, and scarce resources for patients (especially underserved clinics & NGO health programmes).
 
 **Live Demo:** https://rajbharti06.github.io/PulseLock-AI/  
 **Demo credentials:** `admin` / `admin123`
+
+### GNEC judging alignment (quick map)
+
+| Criterion | How PulseLock responds |
+|-----------|-------------------------|
+| **Impact** | Directly protects **health information systems** underpinning SDG 3 (**3.8**, **3.d**); breaches harm **social trust** and **economic sustainability** (diverted budgets, litigation). |
+| **Innovation** | Real-time **pre-execution** security layer; parallel PHI + threat + intent analysis; **AI-to-AI (A2A)** gate; autonomous learning narrative. |
+| **Feasibility & scalability** | Runnable demo today; modular FastAPI backend + React dashboard; FHIR-aligned; low-cost/static hosting story for resource-constrained NGOs. |
+| **Design** | Guided **Mission** walkthrough + **Threat Analyzer** + **Data Shield** cinematic flow; explanations for non-cybersecurity judges. |
+| **Presentation** | Use `docs/GNEC-SUBMISSION.md` for video outline and ZIP checklist. |
+
+### Devpost submission checklist
+
+1. **Video (2–5 min):** Problem → SDG 3 framing → live demo (`Mission` → `Threat Analyzer` → `Data Shield Demo`).  
+2. **Work file:** ZIP of this repository (omit `node_modules`, `venv`, secrets) **and/or** your pitch slides PDF.
+
+**Timed outline, judging prompts, and ZIP tips:** [docs/GNEC-SUBMISSION.md](docs/GNEC-SUBMISSION.md)
 
 ---
 
@@ -164,86 +181,108 @@ Reads patient context from FHIR (Fast Healthcare Interoperability Resources) ser
 └─────────────────┘
 ```
 
----
-
-## How to Run
+## 🚀 Getting Started
 
 ### Prerequisites
-- Python 3.11+
-- Node.js 20+
+- **Python**: 3.11 or higher
+- **Node.js**: 20.x or higher
+- **Package Manager**: npm or yarn
+- **Browser**: Chrome, Firefox, Safari, or Edge
 
-### Backend
+### 🛠️ Installation & Setup
+
+#### 1. Clone the Repository
 ```bash
 git clone https://github.com/Rajbharti06/PulseLock-AI.git
 cd PulseLock-AI
-
-pip install -r backend/requirements.txt
-
-PYTHONPATH=. uvicorn backend.main:app --reload --port 8000
 ```
 
-Backend live at: `http://localhost:8000`  
-API docs at: `http://localhost:8000/docs`
+#### 2. Backend Configuration
+The backend uses FastAPI and requires several dependencies.
+```bash
+# Install dependencies
+pip install -r backend/requirements.txt
 
-### Frontend
+# (Optional) Set up environment variables
+# Create a .env file in the root directory
+# OPENROUTER_API_KEY=your_key_here
+# SECRET_KEY=your_secret_key
+
+# Start the backend server
+$env:PYTHONPATH="."
+uvicorn backend.main:app --reload --port 8000
+```
+Backend will be available at: `http://localhost:8000`
+
+#### 3. Security Agent Setup (A2A)
+PulseLock uses an autonomous agent for AI-to-AI security clearance.
+```bash
+# Install agent dependencies
+pip install -r agent_requirements.txt
+
+# Start the agent
+python -m pulselock_agent.app
+```
+Agent will be available at: `http://localhost:8001`
+
+#### 4. Frontend Dashboard
 ```bash
 cd frontend
 npm install
-VITE_API_URL=http://localhost:8000 npm run dev
+npm run dev
 ```
+Dashboard will be available at: `http://localhost:5173/PulseLock-AI/`
 
-Frontend live at: `http://localhost:5173`
-
-### Login
-```
-Username: admin
-Password: admin123
-```
+### 🔑 Access Credentials
+Use these credentials for local testing:
+- **Username**: `admin`
+- **Password**: `admin123`
 
 ---
 
-## Demo Steps
+## 🧪 Testing & Verification
 
-**Start here → [https://rajbharti06.github.io/PulseLock-AI/](https://rajbharti06.github.io/PulseLock-AI/)**
+Comprehensive testing has been performed across all core modules to ensure system reliability and security integrity.
 
-### Step 1: Mission Page
-Log in → You land on the **Mission** page. Read the SDG 3 alignment, the global crisis stats, and PulseLock's response. This is the "why."
-
-### Step 2: Scan a PHI Leak Attempt
-Go to **Threat Analyzer** → Type `"Send patient report to external email immediately"` → Click **"Analyze Risk"**  
-Watch PulseLock detect patient SSN + MRN, classify it as a critical threat, and **BLOCK** the request with a full explanation and recommended fix.
-
-### Step 3: Detect a Phishing Email
-Go to **Email Guard** → Click **"Load: Phishing Email"** → Click **"Analyze Email"**  
-PulseLock identifies urgency manipulation, credential harvesting signals, and quarantines the email.
-
-### Step 4: AI Security Gate (the most powerful demo)
-Go to **AI Security Gate** → Click **"Attack: External API bulk-exports records"** → Click **"Request Security Clearance"**  
-An AI agent tries to export all patient data to an external server. PulseLock **DENIED** — autonomously, in milliseconds, without human involvement.
-
-Then try **"Safe: Doctor's AI reads patient vitals"** — PulseLock **CLEARED** — because the request is legitimate.
-
-### Step 5: Intelligence
-Go to **Intelligence** → Click **"Run Learning Cycle"**  
-PulseLock analyzes all threats, finds patterns, and evolves its detection rules automatically.
-
----
-
-## Deployment
-
-PulseLock runs completely free with no cloud billing:
-
-| Component | Platform | URL |
+### Test Coverage
+| Module | Test Scenario | Result |
 |---|---|---|
-| Backend API | Render.com (Docker, Free tier) | `https://pulselock-backend.onrender.com` |
-| A2A Agent | Render.com (Docker, Free tier) | `https://pulselock-agent.onrender.com` |
-| Frontend Dashboard | GitHub Pages | `https://rajbharti06.github.io/PulseLock-AI/` |
+| **Auth** | User registration, login, and JWT-based role enforcement | ✅ Passed |
+| **PHI Detector** | Detection of SSNs, DOBs, and Medical Record Numbers in unstructured text | ✅ Passed |
+| **Threat Engine** | Identification of prompt injections and bulk exfiltration attempts | ✅ Passed |
+| **Email Guard** | Phishing detection and indicator-based categorization | ✅ Passed |
+| **A2A Gate** | Inter-agent communication clearance and clearance denial | ✅ Passed |
+| **Intelligence** | Rule evolution tracking and autonomous learning cycles | ✅ Passed |
 
-> A rural hospital with internet access can deploy PulseLock today at zero cost.
+### Demo Workflow
+1. **Login**: Access the dashboard using the admin credentials.
+2. **PulseLab (Threat Analyzer)**: Enter a request like `"Send patient report to external email"` to see real-time blocking.
+3. **Email Guard**: Test phishing detection by loading a sample phishing email.
+4. **AI Security Gate**: Simulate inter-agent requests and watch the clearance process.
+5. **Dashboard**: Monitor the real-time threat feed and system health status.
 
 ---
 
-## Why This Matters for SDG 3
+## 📽️ Demonstration Video
+[Watch the PulseLock AI Demo on YouTube](https://www.youtube.com/watch?v=your_video_id_here)
+
+---
+
+## 🛠️ Troubleshooting & Known Issues
+
+### Common Issues
+- **CORS Errors**: If you encounter CORS issues, ensure your frontend URL is added to `_ALLOWED_ORIGINS` in `backend/main.py` or set via `EXTRA_CORS_ORIGIN` env var.
+- **LLM Unavailable**: By default, the system uses rule-based detection if an `OPENROUTER_API_KEY` is not provided. For full AI intelligence, please provide a valid key.
+- **Module Import Errors**: Always run the backend from the root directory with `PYTHONPATH=.`.
+
+### Troubleshooting Steps
+- **Server not starting**: Check if ports 8000, 8001, or 5173 are already in use by another process.
+- **Database issues**: The system uses SQLite locally. If you encounter database locks, restart the backend server.
+- **WebSocket Disconnects**: Real-time alerts require a stable WebSocket connection. Refresh the dashboard if the "Live" indicator turns red.
+
+---
+
+## 🌍 Why This Matters for SDG 3
 
 Healthcare data is not just data. It is:
 - A cancer patient's treatment history

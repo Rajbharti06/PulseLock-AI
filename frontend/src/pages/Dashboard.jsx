@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { api } from "../api";
 
 // ── Live event seed ──────────────────────────────────────────────────
@@ -21,13 +21,14 @@ function useCounter(target, duration = 1100) {
     if (end === 0) return;
     let cur = 0;
     const step = Math.max(1, Math.ceil(end / 36));
+    const tickMs = duration / 36;
     const iv = setInterval(() => {
       cur = Math.min(cur + step, end);
       setVal(cur);
       if (cur >= end) clearInterval(iv);
-    }, duration / 36);
+    }, tickMs);
     return () => clearInterval(iv);
-  }, [target]);
+  }, [target, duration]);
   return val;
 }
 
@@ -37,27 +38,37 @@ function DonutChart({ segments, size = 176 }) {
   const r = size * 0.35, sw = size * 0.17;
   const circ = 2 * Math.PI * r;
   const total = segments.reduce((s, d) => s + d.value, 0) || 1;
-  let deg = -90;
+
+  const arcs = segments.reduce(
+    (acc, seg, i) => {
+      if (!seg.value) return acc;
+      const pct = seg.value / total;
+      const dash = pct * circ;
+      const rot = acc.rot;
+      acc.elements.push(
+        <circle
+          key={i}
+          cx={cx}
+          cy={cy}
+          r={r}
+          fill="none"
+          stroke={seg.color}
+          strokeWidth={sw}
+          strokeDasharray={`${dash} ${circ - dash}`}
+          strokeLinecap="butt"
+          transform={`rotate(${rot} ${cx} ${cy})`}
+          style={{ filter: `drop-shadow(0 0 5px ${seg.color}88)`, transition: "stroke-dasharray 0.6s ease" }}
+        />,
+      );
+      return { rot: rot + pct * 360, elements: acc.elements };
+    },
+    { rot: -90, elements: [] },
+  ).elements;
 
   return (
     <svg width={size} height={size} style={{ overflow: "visible" }}>
       <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth={sw} />
-      {segments.map((seg, i) => {
-        if (!seg.value) return null;
-        const pct = seg.value / total;
-        const dash = pct * circ;
-        const rot = deg;
-        deg += pct * 360;
-        return (
-          <circle key={i} cx={cx} cy={cy} r={r}
-            fill="none" stroke={seg.color} strokeWidth={sw}
-            strokeDasharray={`${dash} ${circ - dash}`}
-            strokeLinecap="butt"
-            transform={`rotate(${rot} ${cx} ${cy})`}
-            style={{ filter: `drop-shadow(0 0 5px ${seg.color}88)`, transition: "stroke-dasharray 0.6s ease" }}
-          />
-        );
-      })}
+      {arcs}
       <text x={cx} y={cy - 8} textAnchor="middle" fill="#ddeeff" fontSize="20" fontWeight="800" fontFamily="system-ui">{total}</text>
       <text x={cx} y={cy + 10} textAnchor="middle" fill="#7890b0" fontSize="9.5" fontFamily="system-ui" letterSpacing="1">THREATS</text>
     </svg>
@@ -157,7 +168,7 @@ function Toast({ toast, onRemove }) {
   useEffect(() => {
     const t = setTimeout(() => onRemove(toast.id), 4200);
     return () => clearTimeout(t);
-  }, [toast.id]);
+  }, [toast.id, onRemove]);
 
   const isCritical = toast.severity === "critical";
   return (
@@ -240,37 +251,16 @@ export default function Dashboard() {
   const [sessionCount, setSessionCount] = useState(0);
   const sessionRef = useRef(0);
 
-  function addToast(ev) {
+  const addToast = useCallback((ev) => {
     const id = Math.random().toString(36).slice(2);
     setToasts((prev) => [...prev.slice(-3), { ...ev, id }]);
-  }
-
-  function removeToast(id) {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  }
-
-  useEffect(() => {
-    loadData();
-    // Seed 2 initial alerts immediately
-    const seed = [LIVE_EVENTS[2], LIVE_EVENTS[0]].map((ev) => ({ ...ev, timestamp: new Date().toISOString() }));
-    setAlerts(seed);
-
-    const dataIv  = setInterval(loadData, 30000);
-    const alertIv = setInterval(() => {
-      const ev = LIVE_EVENTS[Math.floor(Math.random() * LIVE_EVENTS.length)];
-      const entry = { ...ev, timestamp: new Date().toISOString() };
-      setAlerts((prev) => [entry, ...prev].slice(0, 25));
-      if (["BLOCK", "DELETE", "QUARANTINE"].includes(ev.action)) {
-        sessionRef.current++;
-        setSessionCount(sessionRef.current);
-      }
-      if (ev.severity === "critical") addToast(ev);
-    }, 9000);
-
-    return () => { clearInterval(dataIv); clearInterval(alertIv); };
   }, []);
 
-  async function loadData() {
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  const loadData = useCallback(async () => {
     try {
       const [s, t, sys, ch] = await Promise.all([
         api.getStats(),
@@ -282,8 +272,40 @@ export default function Dashboard() {
       setThreats(t);
       setSystemStatus(sys);
       setChartData(ch);
-    } catch {}
-  }
+    } catch (e) {
+      console.warn("PulseLock dashboard: refresh failed", e);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadData();
+
+    const seedId = window.setTimeout(() => {
+      const seed = [LIVE_EVENTS[2], LIVE_EVENTS[0]].map((ev) => ({
+        ...ev,
+        timestamp: new Date().toISOString(),
+      }));
+      setAlerts(seed);
+    }, 0);
+
+    const dataIv = window.setInterval(() => void loadData(), 30000);
+    const alertIv = window.setInterval(() => {
+      const ev = LIVE_EVENTS[Math.floor(Math.random() * LIVE_EVENTS.length)];
+      const entry = { ...ev, timestamp: new Date().toISOString() };
+      setAlerts((prev) => [entry, ...prev].slice(0, 25));
+      if (["BLOCK", "DELETE", "QUARANTINE"].includes(ev.action)) {
+        sessionRef.current++;
+        setSessionCount(sessionRef.current);
+      }
+      if (ev.severity === "critical") addToast(ev);
+    }, 9000);
+
+    return () => {
+      clearInterval(dataIv);
+      clearInterval(alertIv);
+      clearTimeout(seedId);
+    };
+  }, [loadData, addToast]);
 
   // Build donut segments from chart data
   const donutSegments = chartData

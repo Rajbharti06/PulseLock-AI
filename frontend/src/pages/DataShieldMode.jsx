@@ -65,10 +65,12 @@ export default function DataShieldMode() {
     if (!isRunning) return;
 
     if (currentStepIndex >= DEMO_SEQUENCE.length) {
-      // Sequence finished
-      setTimeout(() => setShowSummary(true), 1500);
-      setIsRunning(false);
-      return;
+      const summaryT = window.setTimeout(() => setShowSummary(true), 1500);
+      const stopT = window.setTimeout(() => setIsRunning(false), 0);
+      return () => {
+        clearTimeout(summaryT);
+        clearTimeout(stopT);
+      };
     }
 
     if (currentStepIndex === -1) {
@@ -134,7 +136,9 @@ export default function DataShieldMode() {
           <h1 className="ds-title">
             <span style={{ color: '#00D4FF', marginRight: '12px' }}>🛡️</span> Data Shield Mode
           </h1>
-          <p className="ds-subtitle">Autonomous multi-agent defense actively monitoring all healthcare system requests.</p>
+          <p className="ds-subtitle">
+            GNEC-ready flagship demo: autonomous multi-agent defence intercepting PHI exfiltration, bulk export, injection, and legitimating safe clinical traffic — judges see outcomes in seconds.
+          </p>
         </div>
         
         {!isRunning && !showSummary && (
@@ -198,6 +202,7 @@ export default function DataShieldMode() {
               <div className="ds-decision-container">
                 {showDecision && (
                   <DecisionCard 
+                    key={`step-${currentStepIndex}-${currentStep.decision}`}
                     visible={true}
                     result={{
                       decision: currentStep.decision,

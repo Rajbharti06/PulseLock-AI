@@ -35,12 +35,15 @@ export default function DecisionCard({ result, visible }) {
   const [withoutPulseLock, setWithoutPulseLock] = useState(false);
 
   useEffect(() => {
-    if (visible) {
+    if (visible && result) {
       const t = setTimeout(() => setShow(true), 300);
       return () => clearTimeout(t);
     }
-    setShow(false);
-    setWithoutPulseLock(false);
+    const id = window.setTimeout(() => {
+      setShow(false);
+      setWithoutPulseLock(false);
+    }, 0);
+    return () => clearTimeout(id);
   }, [visible, result]);
 
   if (!result || !show) return null;

@@ -36,7 +36,6 @@ export const api = {
   getChartData: () => mockGetChartData(),
   getHealth:    () => Promise.resolve({ status: "online", mode: "demo" }),
   getRules:     () => mockGetRules(),
-  getSystemStatus: () => mockGetSystemStatus(),
   getEvolution: () => mockGetEvolution(),
   getThreatTimeline: () => Promise.resolve([]),
 };

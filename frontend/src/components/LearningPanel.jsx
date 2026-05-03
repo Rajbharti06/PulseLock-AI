@@ -8,7 +8,8 @@ export default function LearningPanel({ learning, visible }) {
       const t = setTimeout(() => setShow(true), 500);
       return () => clearTimeout(t);
     }
-    setShow(false);
+    const id = window.setTimeout(() => setShow(false), 0);
+    return () => clearTimeout(id);
   }, [visible, learning]);
 
   if (!visible || !learning || !show) return null;

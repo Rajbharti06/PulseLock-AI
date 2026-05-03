@@ -128,14 +128,7 @@ export default function PulseLab() {
   }
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 280px",
-        gap: 20,
-        alignItems: "start",
-      }}
-    >
+    <div className="pulse-lab-grid">
       {/* Main column */}
       <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         {/* Header */}
@@ -153,8 +146,8 @@ export default function PulseLab() {
               lineHeight: 1.5,
             }}
           >
-            Simulate healthcare actions and watch PulseLock's AI engine analyze,
-            detect, and respond to threats in real time.
+            Simulate healthcare actions and watch PulseLock analyze PHI, malicious intent, and policy risk{" "}
+            <strong style={{ color: "var(--text)" }}>before anything executes</strong> — GNEC Impact & Innovation focal demo.
           </div>
         </div>
 
@@ -434,7 +427,7 @@ export default function PulseLab() {
       </div>
 
       {/* Right side — System Status */}
-      <div style={{ position: "sticky", top: 72 }}>
+      <div className="pulse-lab-sidebar" style={{ position: "sticky", top: 88 }}>
         <SystemStatusPanel />
       </div>
     </div>

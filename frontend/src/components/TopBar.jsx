@@ -2,23 +2,37 @@ import React from 'react';
 
 const TopBar = () => {
   return (
-    <div className="flex items-center justify-between w-full bg-[#080C18] border-b border-[#1E293B] py-2 px-6 text-xs font-mono tracking-wider z-50 sticky top-0">
-      <div className="flex items-center space-x-6">
-        <div className="flex items-center text-[#00FF9C]">
-          <span className="relative flex h-2 w-2 mr-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00FF9C] opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00FF9C]"></span>
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      width: '100%',
+      background: '#080C18',
+      borderBottom: '1px solid #1E293B',
+      padding: '8px 24px',
+      fontSize: '0.75rem',
+      fontFamily: 'monospace',
+      letterSpacing: '0.05em',
+      zIndex: 50,
+      position: 'sticky',
+      top: 0
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', color: '#00FF9C' }}>
+          <span style={{ position: 'relative', display: 'flex', height: '8px', width: '8px', marginRight: '8px' }}>
+            <span style={{ position: 'absolute', display: 'inline-flex', height: '100%', width: '100%', borderRadius: '50%', background: '#00FF9C', opacity: 0.75, animation: 'pulse 2s infinite' }}></span>
+            <span style={{ position: 'relative', display: 'inline-flex', borderRadius: '50%', height: '8px', width: '8px', background: '#00FF9C' }}></span>
           </span>
           SYSTEM ACTIVE
         </div>
-        <div className="flex items-center text-[#00D4FF]">
-          <span className="mr-2">🧠</span>
+        <div style={{ display: 'flex', alignItems: 'center', color: '#00D4FF' }}>
+          <span style={{ marginRight: '8px' }}>🧠</span>
           AI LEARNING: ON
         </div>
       </div>
       
-      <div className="flex items-center text-[#FF3B3B] font-bold">
-        <span className="mr-2">🛡️</span>
+      <div style={{ display: 'flex', alignItems: 'center', color: '#FF3B3B', fontWeight: 'bold' }}>
+        <span style={{ marginRight: '8px' }}>🛡️</span>
         ZERO TRUST MODE: ENFORCED
       </div>
     </div>

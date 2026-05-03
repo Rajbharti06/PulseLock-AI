@@ -78,9 +78,9 @@ export default function App() {
   const PageComponent = PAGE_MAP[page] || DataShieldMode;
 
   return (
-    <div className="app flex flex-col h-screen">
+    <div className="app" style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw' }}>
       <TopBar />
-      <div className="flex flex-1 overflow-hidden">
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
       {page !== "datashield" && (
         <aside className="sidebar">
         <div className="sidebar-header">
@@ -137,7 +137,19 @@ export default function App() {
       </aside>
       )}
 
-      <main className="main flex-1 flex flex-col overflow-hidden relative">
+      <main 
+        className="main" 
+        style={{ 
+          flex: 1, 
+          display: 'flex', 
+          flexDirection: 'column', 
+          overflow: 'hidden', 
+          position: 'relative',
+          marginLeft: page === 'datashield' ? 0 : '228px',
+          paddingTop: page === 'datashield' ? '28px' : '80px',
+          padding: '28px'
+        }}
+      >
         <PageComponent />
       </main>
       </div>

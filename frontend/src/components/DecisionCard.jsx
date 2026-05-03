@@ -54,31 +54,53 @@ export default function DecisionCard({ result, visible }) {
   if (withoutPulseLock && isBlocked) {
     return (
       <div
-        className="w-full flex flex-col items-center justify-center p-12 rounded-2xl relative overflow-hidden animate-decisionReveal"
         style={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '48px',
+          borderRadius: '16px',
+          position: 'relative',
+          overflow: 'hidden',
+          animation: 'decisionReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
           background: "rgba(255,0,0,0.15)",
           border: "2px solid #FF0000",
           boxShadow: "0 0 60px rgba(255,0,0,0.4)",
         }}
       >
-        <div className="text-6xl mb-4">💀</div>
-        <div className="text-4xl font-black text-red-500 tracking-widest mb-2 uppercase text-center" style={{ textShadow: "0 0 20px rgba(255,0,0,0.8)" }}>
+        <div style={{ fontSize: '3.75rem', marginBottom: '16px' }}>💀</div>
+        <div style={{ fontSize: '2.25rem', fontWeight: 900, color: '#ef4444', letterSpacing: '0.1em', marginBottom: '8px', textTransform: 'uppercase', textAlign: 'center', textShadow: "0 0 20px rgba(255,0,0,0.8)" }}>
           Data Breach Occurred
         </div>
-        <div className="text-red-300 text-lg mb-8 text-center max-w-2xl">
+        <div style={{ color: '#fca5a5', fontSize: '1.125rem', marginBottom: '32px', textAlign: 'center', maxWidth: '42rem' }}>
           Sensitive patient records have been exfiltrated. Legal violation detected. Millions of dollars in compliance fines and loss of patient trust imminent.
         </div>
         
-        <div className="bg-red-900/40 border border-red-500/50 p-6 rounded-xl w-full max-w-2xl text-left font-mono mb-8">
-          <div className="text-red-400 font-bold mb-2">RAW LEAKED DATA:</div>
-          <div className="text-white opacity-80 break-words text-sm">
+        <div style={{ background: 'rgba(127,29,29,0.4)', border: '1px solid rgba(239,68,68,0.5)', padding: '24px', borderRadius: '12px', width: '100%', maxWidth: '42rem', textAlign: 'left', fontFamily: 'monospace', marginBottom: '32px' }}>
+          <div style={{ color: '#f87171', fontWeight: 'bold', marginBottom: '8px' }}>RAW LEAKED DATA:</div>
+          <div style={{ color: 'white', opacity: 0.8, wordBreak: 'break-word', fontSize: '0.875rem' }}>
             {result.reason || "Patient Name, DOB, Medical History, SSN exposed to unauthorized external server."}
           </div>
         </div>
 
         <button
           onClick={() => setWithoutPulseLock(false)}
-          className="bg-[#00FF9C] hover:bg-[#00E676] text-black font-bold py-3 px-8 rounded-full shadow-[0_0_20px_rgba(0,255,156,0.4)] transition-all transform hover:scale-105 flex items-center gap-2"
+          style={{
+            background: '#00FF9C',
+            color: 'black',
+            fontWeight: 'bold',
+            padding: '12px 32px',
+            borderRadius: '9999px',
+            boxShadow: '0 0 20px rgba(0,255,156,0.4)',
+            transition: 'all 0.2s',
+            cursor: 'pointer',
+            border: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
         >
           <span>✅</span> Switch Back: Block with PulseLock
         </button>
@@ -88,8 +110,14 @@ export default function DecisionCard({ result, visible }) {
 
   return (
     <div
-      className="w-full rounded-2xl p-10 text-center relative overflow-hidden animate-decisionReveal"
       style={{
+        width: '100%',
+        borderRadius: '16px',
+        padding: '40px',
+        textAlign: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+        animation: 'decisionReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
         background: cfg.bg,
         border: `2px solid ${cfg.border}`,
         boxShadow: cfg.glow,
@@ -97,17 +125,25 @@ export default function DecisionCard({ result, visible }) {
     >
       {/* Scanline effect */}
       <div
-        className="absolute top-0 left-0 right-0 h-[2px] opacity-60 animate-scanlineMove"
         style={{
+          position: 'absolute',
+          top: 0, left: 0, right: 0,
+          height: '2px',
+          opacity: 0.6,
+          animation: 'scanlineMove 2s ease infinite',
           background: `linear-gradient(90deg, transparent, ${cfg.color}, transparent)`,
         }}
       />
 
-      <div className="text-6xl mb-4 leading-none">{cfg.icon}</div>
+      <div style={{ fontSize: '3.75rem', marginBottom: '16px', lineHeight: 1 }}>{cfg.icon}</div>
 
       <div
-        className="text-5xl font-black tracking-widest mb-2 uppercase"
         style={{
+          fontSize: '3rem',
+          fontWeight: 900,
+          letterSpacing: '0.1em',
+          marginBottom: '8px',
+          textTransform: 'uppercase',
           color: cfg.color,
           textShadow: `0 0 20px ${cfg.color}66`,
         }}
@@ -115,51 +151,55 @@ export default function DecisionCard({ result, visible }) {
         {cfg.label}
       </div>
 
-      <div className="text-lg text-slate-300 mb-6 font-medium">
+      <div style={{ fontSize: '1.125rem', color: '#cbd5e1', marginBottom: '24px', fontWeight: 500 }}>
         {cfg.desc}
       </div>
 
       {/* Confidence meter */}
       <div
-        className="inline-flex items-center gap-3 px-6 py-2 rounded-full mb-8"
         style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '12px',
+          padding: '8px 24px',
+          borderRadius: '9999px',
+          marginBottom: '32px',
           background: "rgba(0,0,0,0.3)",
           border: `1px solid ${cfg.border}`,
         }}
       >
-        <span className="text-sm text-slate-400 font-bold tracking-wide uppercase">
+        <span style={{ fontSize: '0.875rem', color: '#94a3b8', fontWeight: 'bold', letterSpacing: '0.025em', textTransform: 'uppercase' }}>
           AI Confidence
         </span>
         <span
-          className="text-2xl font-black"
-          style={{ color: cfg.color }}
+          style={{ fontSize: '1.5rem', fontWeight: 900, color: cfg.color }}
         >
           {Math.round((result.confidence || 0) * 100)}%
         </span>
       </div>
 
       {isBlocked && (
-        <div className="bg-black/40 border border-[#1E293B] rounded-xl p-4 mb-8 max-w-2xl mx-auto text-left flex gap-6">
-          <div className="flex-1">
-            <div className="flex items-center text-[#FF3B3B] font-bold text-sm mb-2 uppercase tracking-wider">
-              <span className="mr-2">🚨</span> Sensitive Data Detected
+        <div style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid #1E293B', borderRadius: '12px', padding: '16px', marginBottom: '32px', maxWidth: '42rem', marginLeft: 'auto', marginRight: 'auto', textAlign: 'left', display: 'flex', gap: '24px' }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', color: '#FF3B3B', fontWeight: 'bold', fontSize: '0.875rem', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <span style={{ marginRight: '8px' }}>🚨</span> Sensitive Data Detected
             </div>
-            <div className="text-slate-300 text-sm font-mono leading-relaxed">
+            <div style={{ color: '#cbd5e1', fontSize: '0.875rem', fontFamily: 'monospace', lineHeight: 1.6 }}>
               {result.reason || "Patient Name, DOB, Medical History"}
             </div>
           </div>
           
-          <div className="w-px bg-slate-800"></div>
+          <div style={{ width: '1px', background: '#1e293b' }}></div>
 
-          <div className="flex-1">
-            <div className="flex items-center text-slate-400 font-bold text-xs mb-2 uppercase tracking-wider">
-              <span className="mr-2">⚠️</span> If Not Blocked:
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', color: '#94a3b8', fontWeight: 'bold', fontSize: '0.75rem', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <span style={{ marginRight: '8px' }}>⚠️</span> If Not Blocked:
             </div>
-            <ul className="text-slate-300 text-xs font-mono space-y-1">
+            <ul style={{ color: '#cbd5e1', fontSize: '0.75rem', fontFamily: 'monospace', listStyle: 'none', padding: 0, margin: 0, lineHeight: 1.5 }}>
               <li>• Patient identity exposed</li>
               <li>• Medical records leaked</li>
               <li>• Regulatory violation (HIPAA)</li>
-              <li className="text-[#FF3B3B] font-bold">• Financial damage risk: HIGH</li>
+              <li style={{ color: '#FF3B3B', fontWeight: 'bold' }}>• Financial damage risk: HIGH</li>
             </ul>
           </div>
         </div>
@@ -168,7 +208,21 @@ export default function DecisionCard({ result, visible }) {
       {isBlocked && (
         <button
           onClick={() => setWithoutPulseLock(true)}
-          className="mx-auto flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-6 py-2 rounded border border-slate-600 transition-colors text-sm font-medium"
+          style={{
+            margin: '0 auto',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: '#1e293b',
+            color: '#cbd5e1',
+            padding: '8px 24px',
+            borderRadius: '4px',
+            border: '1px solid #475569',
+            fontSize: '0.875rem',
+            fontWeight: 500,
+            cursor: 'pointer',
+            transition: 'background 0.2s'
+          }}
         >
           <span>👉</span> View "Without PulseLock"
         </button>

@@ -126,40 +126,54 @@ export default function DataShieldMode() {
 
 
   return (
-    <div className="flex-1 flex flex-col p-6 animate-fadeIn h-full">
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', animation: 'fadeIn 0.5s' }}>
       
       {/* Header Area */}
-      <div className="mb-6 flex justify-between items-end border-b border-[#1E293B] pb-4 shrink-0">
+      <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '1px solid #1E293B', paddingBottom: '16px', flexShrink: 0 }}>
         <div>
-          <h1 className="text-3xl font-black text-white tracking-wide mb-2 flex items-center">
-            <span className="text-[#00D4FF] mr-3">🛡️</span> Data Shield Mode
+          <h1 style={{ fontSize: '1.875rem', fontWeight: 900, color: 'white', letterSpacing: '0.025em', marginBottom: '8px', display: 'flex', alignItems: 'center' }}>
+            <span style={{ color: '#00D4FF', marginRight: '12px' }}>🛡️</span> Data Shield Mode
           </h1>
-          <p className="text-slate-400">Autonomous multi-agent defense actively monitoring all healthcare system requests.</p>
+          <p style={{ color: '#94a3b8' }}>Autonomous multi-agent defense actively monitoring all healthcare system requests.</p>
         </div>
         
         {!isRunning && !showSummary && (
           <button 
             onClick={startSimulation}
-            className="bg-[#FF3B3B] hover:bg-[#FF1A1A] text-white font-bold py-3 px-8 rounded flex items-center gap-3 transition-transform hover:scale-105 shadow-[0_0_20px_rgba(255,59,59,0.3)] animate-pulse"
+            style={{
+              background: '#FF3B3B',
+              color: 'white',
+              fontWeight: 'bold',
+              padding: '12px 32px',
+              borderRadius: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              boxShadow: '0 0 20px rgba(255,59,59,0.3)',
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'transform 0.2s',
+              animation: 'pulse 2s infinite'
+            }}
           >
-            <span className="text-xl">🚨</span>
+            <span style={{ fontSize: '1.25rem' }}>🚨</span>
             RUN ATTACK SIMULATION
           </button>
         )}
       </div>
 
       {/* Main Content Layout */}
-      <div className="flex-1 flex gap-6 min-h-0">
+      <div style={{ flex: 1, display: 'flex', gap: '24px', minHeight: 0 }}>
         
         {/* Left Side: The Cinematic Stage */}
-        <div className="flex-1 flex flex-col relative bg-[#0c1120]/50 rounded-2xl border border-[#1E293B] overflow-hidden">
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', background: 'rgba(12, 17, 32, 0.5)', borderRadius: '16px', border: '1px solid #1E293B', overflow: 'hidden' }}>
           
           {/* Default Empty State */}
           {!isRunning && currentStepIndex === -1 && !showSummary && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
-              <div className="text-6xl mb-6 opacity-50">📡</div>
-              <h2 className="text-2xl font-bold text-slate-300 mb-4">Awaiting Network Traffic</h2>
-              <p className="text-slate-500 max-w-md mx-auto">
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '32px' }}>
+              <div style={{ fontSize: '3.75rem', marginBottom: '24px', opacity: 0.5 }}>📡</div>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#cbd5e1', marginBottom: '16px' }}>Awaiting Network Traffic</h2>
+              <p style={{ color: '#64748b', maxWidth: '28rem', margin: '0 auto' }}>
                 PulseLock is currently intercepting requests at the gateway. Click "Run Attack Simulation" to witness the real-time autonomous defense in action.
               </p>
             </div>
@@ -167,35 +181,35 @@ export default function DataShieldMode() {
 
           {/* Active Simulation Stage */}
           {isRunning && currentStep && !showSummary && (
-            <div className="absolute inset-0 p-8 flex flex-col animate-fadeIn">
+            <div style={{ position: 'absolute', inset: 0, padding: '32px', display: 'flex', flexDirection: 'column', animation: 'fadeIn 0.5s' }}>
               
-              <div className="flex justify-between items-center mb-8 shrink-0">
-                <div className="bg-[#1E293B] text-slate-300 px-4 py-1.5 rounded-full text-sm font-mono flex items-center gap-2 border border-slate-700">
-                  <span className="w-2 h-2 rounded-full bg-[#00D4FF] animate-ping"></span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexShrink: 0 }}>
+                <div style={{ background: '#1E293B', color: '#cbd5e1', padding: '6px 16px', borderRadius: '9999px', fontSize: '0.875rem', fontFamily: 'monospace', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid #334155' }}>
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#00D4FF', animation: 'pulse 2s infinite' }}></span>
                   Intercepting Request {currentStepIndex + 1} of {DEMO_SEQUENCE.length}
                 </div>
                 
                 {/* Narrative Text Display */}
-                <div className="text-[#00D4FF] font-mono text-lg animate-pulse tracking-wide font-bold">
+                <div style={{ color: '#00D4FF', fontFamily: 'monospace', fontSize: '1.125rem', fontWeight: 'bold', letterSpacing: '0.025em', animation: 'pulse 2s infinite' }}>
                   {narrativeText}
                 </div>
 
-                <div className="text-slate-500 font-mono text-sm">
+                <div style={{ color: '#64748b', fontFamily: 'monospace', fontSize: '0.875rem' }}>
                   PROCESSING TIME: {showDecision ? '124ms' : '...'}
                 </div>
               </div>
 
               {/* The Intercepted Request Details */}
-              <div className="bg-black/50 border border-[#1E293B] rounded-xl p-6 mb-8 w-full max-w-4xl mx-auto shadow-lg backdrop-blur-sm relative overflow-hidden shrink-0">
-                <div className="absolute top-0 left-0 w-1 h-full bg-[#00D4FF]"></div>
-                <h3 className="text-[#00D4FF] font-bold uppercase tracking-wider text-sm mb-4">Incoming Traffic Payload</h3>
-                <div className="font-mono text-slate-300 text-lg leading-relaxed break-words">
+              <div style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid #1E293B', borderRadius: '12px', padding: '24px', marginBottom: '32px', width: '100%', maxWidth: '56rem', margin: '0 auto 32px auto', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', backdropFilter: 'blur(4px)', position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: '#00D4FF' }}></div>
+                <h3 style={{ color: '#00D4FF', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.875rem', marginBottom: '16px' }}>Incoming Traffic Payload</h3>
+                <div style={{ fontFamily: 'monospace', color: '#cbd5e1', fontSize: '1.125rem', lineHeight: 1.6, wordBreak: 'break-word' }}>
                   {currentStep.body}
                 </div>
               </div>
 
               {/* The Dominant Decision Card */}
-              <div className="flex-1 flex flex-col items-center justify-start w-full max-w-4xl mx-auto overflow-y-auto custom-scrollbar">
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', width: '100%', maxWidth: '56rem', margin: '0 auto', overflowY: 'auto' }}>
                 {showDecision && (
                   <DecisionCard 
                     visible={true}
@@ -213,33 +227,44 @@ export default function DataShieldMode() {
 
           {/* Victory Summary Screen */}
           {showSummary && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-center bg-[#0c1120] animate-fadeIn">
-              <div className="text-[#00FF9C] text-8xl mb-6">🛡️</div>
-              <h2 className="text-5xl font-black text-white tracking-wide mb-8">SYSTEMS SECURED</h2>
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px', textAlign: 'center', background: '#0c1120', animation: 'fadeIn 0.5s' }}>
+              <div style={{ color: '#00FF9C', fontSize: '6rem', marginBottom: '24px' }}>🛡️</div>
+              <h2 style={{ fontSize: '3rem', fontWeight: 900, color: 'white', letterSpacing: '0.025em', marginBottom: '32px' }}>SYSTEMS SECURED</h2>
               
-              <div className="grid grid-cols-3 gap-8 w-full max-w-4xl mb-12">
-                <div className="bg-[#1E293B]/50 border border-slate-700 rounded-xl p-6 shadow-lg">
-                  <div className="text-4xl font-black text-[#FF3B3B] mb-2">3</div>
-                  <div className="text-slate-400 font-bold uppercase tracking-wider text-sm">Threats Blocked</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '32px', width: '100%', maxWidth: '56rem', marginBottom: '48px' }}>
+                <div style={{ background: 'rgba(30,41,59,0.5)', border: '1px solid #334155', borderRadius: '12px', padding: '24px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}>
+                  <div style={{ fontSize: '2.25rem', fontWeight: 900, color: '#FF3B3B', marginBottom: '8px' }}>3</div>
+                  <div style={{ color: '#94a3b8', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.875rem' }}>Threats Blocked</div>
                 </div>
-                <div className="bg-[#1E293B]/50 border border-slate-700 rounded-xl p-6 shadow-lg">
-                  <div className="text-4xl font-black text-[#00FF9C] mb-2">1</div>
-                  <div className="text-slate-400 font-bold uppercase tracking-wider text-sm">Safe Requests Allowed</div>
+                <div style={{ background: 'rgba(30,41,59,0.5)', border: '1px solid #334155', borderRadius: '12px', padding: '24px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}>
+                  <div style={{ fontSize: '2.25rem', fontWeight: 900, color: '#00FF9C', marginBottom: '8px' }}>1</div>
+                  <div style={{ color: '#94a3b8', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.875rem' }}>Safe Requests Allowed</div>
                 </div>
-                <div className="bg-[#1E293B]/50 border border-[#00FF9C]/30 rounded-xl p-6 shadow-[0_0_30px_rgba(0,255,156,0.15)] relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-full h-1 bg-[#00FF9C]"></div>
-                  <div className="text-4xl font-black text-white mb-2">0</div>
-                  <div className="text-[#00FF9C] font-bold uppercase tracking-wider text-sm">Patient Data Exposed</div>
+                <div style={{ background: 'rgba(30,41,59,0.5)', border: '1px solid rgba(0,255,156,0.3)', borderRadius: '12px', padding: '24px', boxShadow: '0 0 30px rgba(0,255,156,0.15)', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', background: '#00FF9C' }}></div>
+                  <div style={{ fontSize: '2.25rem', fontWeight: 900, color: 'white', marginBottom: '8px' }}>0</div>
+                  <div style={{ color: '#00FF9C', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.875rem' }}>Patient Data Exposed</div>
                 </div>
               </div>
 
-              <p className="text-slate-400 text-lg mb-8 max-w-2xl mx-auto">
+              <p style={{ color: '#94a3b8', fontSize: '1.125rem', marginBottom: '32px', maxWidth: '42rem', margin: '0 auto 32px auto' }}>
                 PulseLock successfully intercepted all critical threats autonomously without disrupting valid healthcare operations. Patient trust is maintained.
               </p>
 
               <button 
                 onClick={startSimulation}
-                className="bg-transparent border-2 border-[#00D4FF] text-[#00D4FF] hover:bg-[#00D4FF]/10 font-bold py-3 px-8 rounded transition-colors"
+                style={{
+                  background: 'transparent',
+                  border: '2px solid #00D4FF',
+                  color: '#00D4FF',
+                  fontWeight: 'bold',
+                  padding: '12px 32px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  transition: 'background 0.2s'
+                }}
+                onMouseOver={(e) => e.target.style.background = 'rgba(0, 212, 255, 0.1)'}
+                onMouseOut={(e) => e.target.style.background = 'transparent'}
               >
                 Restart Simulation
               </button>
@@ -249,7 +274,7 @@ export default function DataShieldMode() {
         </div>
 
         {/* Right Side: Threat Timeline */}
-        <div className="w-[400px] flex-shrink-0">
+        <div style={{ width: '400px', flexShrink: 0 }}>
           <ThreatTimeline timelineEvents={timelineEvents} />
         </div>
 

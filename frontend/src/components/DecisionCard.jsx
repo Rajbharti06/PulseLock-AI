@@ -53,32 +53,16 @@ export default function DecisionCard({ result, visible }) {
 
   if (withoutPulseLock && isBlocked) {
     return (
-      <div
-        style={{
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '48px',
-          borderRadius: '16px',
-          position: 'relative',
-          overflow: 'hidden',
-          animation: 'decisionReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-          background: "rgba(255,0,0,0.15)",
-          border: "2px solid #FF0000",
-          boxShadow: "0 0 60px rgba(255,0,0,0.4)",
-        }}
-      >
+      <div className="dc-breach-container">
         <div style={{ fontSize: '3.75rem', marginBottom: '16px' }}>💀</div>
-        <div style={{ fontSize: '2.25rem', fontWeight: 900, color: '#ef4444', letterSpacing: '0.1em', marginBottom: '8px', textTransform: 'uppercase', textAlign: 'center', textShadow: "0 0 20px rgba(255,0,0,0.8)" }}>
+        <div className="dc-breach-title">
           Data Breach Occurred
         </div>
-        <div style={{ color: '#fca5a5', fontSize: '1.125rem', marginBottom: '32px', textAlign: 'center', maxWidth: '42rem' }}>
+        <div className="dc-breach-desc">
           Sensitive patient records have been exfiltrated. Legal violation detected. Millions of dollars in compliance fines and loss of patient trust imminent.
         </div>
         
-        <div style={{ background: 'rgba(127,29,29,0.4)', border: '1px solid rgba(239,68,68,0.5)', padding: '24px', borderRadius: '12px', width: '100%', maxWidth: '42rem', textAlign: 'left', fontFamily: 'monospace', marginBottom: '32px' }}>
+        <div className="dc-breach-data-box">
           <div style={{ color: '#f87171', fontWeight: 'bold', marginBottom: '8px' }}>RAW LEAKED DATA:</div>
           <div style={{ color: 'white', opacity: 0.8, wordBreak: 'break-word', fontSize: '0.875rem' }}>
             {result.reason || "Patient Name, DOB, Medical History, SSN exposed to unauthorized external server."}
@@ -87,20 +71,7 @@ export default function DecisionCard({ result, visible }) {
 
         <button
           onClick={() => setWithoutPulseLock(false)}
-          style={{
-            background: '#00FF9C',
-            color: 'black',
-            fontWeight: 'bold',
-            padding: '12px 32px',
-            borderRadius: '9999px',
-            boxShadow: '0 0 20px rgba(0,255,156,0.4)',
-            transition: 'all 0.2s',
-            cursor: 'pointer',
-            border: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
+          className="dc-breach-btn"
         >
           <span>✅</span> Switch Back: Block with PulseLock
         </button>
@@ -110,14 +81,8 @@ export default function DecisionCard({ result, visible }) {
 
   return (
     <div
+      className="dc-container"
       style={{
-        width: '100%',
-        borderRadius: '16px',
-        padding: '40px',
-        textAlign: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-        animation: 'decisionReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
         background: cfg.bg,
         border: `2px solid ${cfg.border}`,
         boxShadow: cfg.glow,
@@ -125,12 +90,8 @@ export default function DecisionCard({ result, visible }) {
     >
       {/* Scanline effect */}
       <div
+        className="dc-scanline"
         style={{
-          position: 'absolute',
-          top: 0, left: 0, right: 0,
-          height: '2px',
-          opacity: 0.6,
-          animation: 'scanlineMove 2s ease infinite',
           background: `linear-gradient(90deg, transparent, ${cfg.color}, transparent)`,
         }}
       />
@@ -138,12 +99,8 @@ export default function DecisionCard({ result, visible }) {
       <div style={{ fontSize: '3.75rem', marginBottom: '16px', lineHeight: 1 }}>{cfg.icon}</div>
 
       <div
+        className="dc-title"
         style={{
-          fontSize: '3rem',
-          fontWeight: 900,
-          letterSpacing: '0.1em',
-          marginBottom: '8px',
-          textTransform: 'uppercase',
           color: cfg.color,
           textShadow: `0 0 20px ${cfg.color}66`,
         }}
@@ -157,14 +114,8 @@ export default function DecisionCard({ result, visible }) {
 
       {/* Confidence meter */}
       <div
+        className="dc-confidence"
         style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '12px',
-          padding: '8px 24px',
-          borderRadius: '9999px',
-          marginBottom: '32px',
-          background: "rgba(0,0,0,0.3)",
           border: `1px solid ${cfg.border}`,
         }}
       >
@@ -179,7 +130,7 @@ export default function DecisionCard({ result, visible }) {
       </div>
 
       {isBlocked && (
-        <div style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid #1E293B', borderRadius: '12px', padding: '16px', marginBottom: '32px', maxWidth: '42rem', marginLeft: 'auto', marginRight: 'auto', textAlign: 'left', display: 'flex', gap: '24px' }}>
+        <div className="dc-consequence-box">
           <div style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', color: '#FF3B3B', fontWeight: 'bold', fontSize: '0.875rem', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               <span style={{ marginRight: '8px' }}>🚨</span> Sensitive Data Detected
@@ -208,21 +159,7 @@ export default function DecisionCard({ result, visible }) {
       {isBlocked && (
         <button
           onClick={() => setWithoutPulseLock(true)}
-          style={{
-            margin: '0 auto',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: '#1e293b',
-            color: '#cbd5e1',
-            padding: '8px 24px',
-            borderRadius: '4px',
-            border: '1px solid #475569',
-            fontSize: '0.875rem',
-            fontWeight: 500,
-            cursor: 'pointer',
-            transition: 'background 0.2s'
-          }}
+          className="dc-view-without-btn"
         >
           <span>👉</span> View "Without PulseLock"
         </button>

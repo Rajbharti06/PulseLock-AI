@@ -8,6 +8,34 @@
 
 ---
 
+## 📸 Product Walkthrough
+
+### Threat Analyzer (PulseLab)
+The core simulation engine where you can test different healthcare data requests and watch the AI react in real-time.
+![Threat Analyzer](docs/screenshots/threat_analyzer_page.png)
+
+### Real-Time Threat Interception
+Watch as PulseLock detects a PHI leak, blocks the action, logs it with a terminal typewriter effect, measures impact, and evolves its own rules!
+![Dramatic Reveal Demo](docs/screenshots/dramatic_reveal.webp)
+
+### Security Dashboard
+A comprehensive view of the hospital's security posture, tracking prompt injections, PHI exfiltration, and active threat distribution.
+![Security Dashboard](docs/screenshots/dashboard_page.png)
+
+### The Mission Page
+Explaining the "Why" behind PulseLock and aligning with UN SDG 3.
+![Mission Page](docs/screenshots/mission_page.png)
+
+### Data Shield Action Demo
+PulseLock automatically scanning against different attack vectors in a comprehensive demo flow.
+![Data Shield Demo](docs/screenshots/data_shield_demo.webp)
+
+### AI Security Gate (A2A Protocol)
+Testing the security checkpoint between different AI agents to ensure malicious agents cannot extract patient data.
+![AI Gate Demo](docs/screenshots/ai_gate_and_pages.webp)
+
+---
+
 ## The Problem
 
 Healthcare is the most attacked industry in the world — and the most vulnerable.
@@ -124,12 +152,8 @@ Reads patient context from FHIR (Fast Healthcare Interoperability Resources) ser
 │  AI AGENTS      │                  │   PULSELOCK A2A AGENT   │
 │  (parallel)     │                  │   Google ADK + Gemini   │
 │                 │                  │   A2A Protocol Server   │
-│  PHI Detector   │                  │   Prompt Opinion        │
-│  Threat Det.    │                  │   Marketplace Ready     │
-│  Intent Anal.   │                  └─────────────────────────┘
-│  Policy Engine  │
-│  Response Agent │
-└──────┬──────────┘
+│  Prompt Opinion │                  │   Marketplace Ready     │
+└──────┬──────────┘                  └─────────────────────────┘
        │
 ┌──────▼──────────┐
 │  SQLite DB      │
@@ -186,7 +210,7 @@ Password: admin123
 Log in → You land on the **Mission** page. Read the SDG 3 alignment, the global crisis stats, and PulseLock's response. This is the "why."
 
 ### Step 2: Scan a PHI Leak Attempt
-Go to **Data Shield** → Click **"PHI Leak Attempt"** sample → Click **"Run Security Scan"**  
+Go to **Threat Analyzer** → Type `"Send patient report to external email immediately"` → Click **"Analyze Risk"**  
 Watch PulseLock detect patient SSN + MRN, classify it as a critical threat, and **BLOCK** the request with a full explanation and recommended fix.
 
 ### Step 3: Detect a Phishing Email

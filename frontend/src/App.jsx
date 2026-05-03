@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import PulseLab from "./pages/PulseLab";
 import Scan from "./pages/Scan";
 import Incidents from "./pages/Incidents";
 import Reports from "./pages/Reports";
@@ -14,6 +15,7 @@ const NAV = [
     items: [
       { id: "impact",     label: "Mission",           icon: "◎" },
       { id: "dashboard",  label: "Dashboard",         icon: "▦" },
+      { id: "pulselab",   label: "Threat Analyzer",   icon: "⚡" },
     ],
   },
   {
@@ -36,6 +38,7 @@ const NAV = [
 const PAGE_TITLES = {
   impact: "Mission",
   dashboard: "Security Dashboard",
+  pulselab: "Threat Analyzer",
   scan: "Data Shield",
   email: "Email Guard",
   agents: "AI Security Gate",
@@ -43,7 +46,16 @@ const PAGE_TITLES = {
   reports: "Intelligence",
 };
 
-const PAGE_MAP = { impact: Impact, dashboard: Dashboard, scan: Scan, email: EmailScan, agents: AgentSim, incidents: Incidents, reports: Reports };
+const PAGE_MAP = {
+  impact: Impact,
+  dashboard: Dashboard,
+  pulselab: PulseLab,
+  scan: Scan,
+  email: EmailScan,
+  agents: AgentSim,
+  incidents: Incidents,
+  reports: Reports,
+};
 
 export default function App() {
   const [token, setToken] = useState(() => localStorage.getItem("token"));
@@ -87,6 +99,22 @@ export default function App() {
                 >
                   <span className="nav-icon">{p.icon}</span>
                   {p.label}
+                  {p.id === "pulselab" && (
+                    <span
+                      style={{
+                        marginLeft: "auto",
+                        fontSize: "0.58rem",
+                        fontWeight: 700,
+                        padding: "1px 6px",
+                        borderRadius: 99,
+                        background: "rgba(255,59,59,0.15)",
+                        color: "#FF3B3B",
+                        letterSpacing: "0.06em",
+                      }}
+                    >
+                      NEW
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
@@ -111,7 +139,7 @@ export default function App() {
         <div style={{ flex: 1 }} />
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <span style={{ fontSize: "0.72rem", color: "var(--text2)" }}>
-            Monitoring healthcare systems in real time
+            Real-time AI firewall for healthcare systems
           </span>
           <div className="topbar-sep" />
           <div className="chip chip-green" style={{ fontSize: "0.65rem" }}>

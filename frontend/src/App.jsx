@@ -1,27 +1,28 @@
 import { useState } from "react";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import PulseLab from "./pages/PulseLab";
+import DataShieldMode from "./pages/DataShieldMode";
 import Scan from "./pages/Scan";
 import Incidents from "./pages/Incidents";
 import Reports from "./pages/Reports";
 import EmailScan from "./pages/EmailScan";
 import AgentSim from "./pages/AgentSim";
 import Impact from "./pages/Impact";
+import TopBar from "./components/TopBar";
 
 const NAV = [
   {
     section: "Overview",
     items: [
+      { id: "datashield", label: "Data Shield Mode",  icon: "🛡️" },
       { id: "impact",     label: "Mission",           icon: "◎" },
       { id: "dashboard",  label: "Dashboard",         icon: "▦" },
-      { id: "pulselab",   label: "Threat Analyzer",   icon: "⚡" },
     ],
   },
   {
     section: "Protection",
     items: [
-      { id: "scan",       label: "Data Shield",       icon: "⬡" },
+      { id: "scan",       label: "Data Shield (Legacy)",icon: "⬡" },
       { id: "email",      label: "Email Guard",       icon: "✉" },
       { id: "agents",     label: "AI Security Gate",  icon: "⟳" },
     ],
@@ -36,10 +37,10 @@ const NAV = [
 ];
 
 const PAGE_TITLES = {
+  datashield: "Data Shield Mode",
   impact: "Mission",
   dashboard: "Security Dashboard",
-  pulselab: "Threat Analyzer",
-  scan: "Data Shield",
+  scan: "Data Shield (Legacy)",
   email: "Email Guard",
   agents: "AI Security Gate",
   incidents: "Threat Log",
@@ -47,9 +48,9 @@ const PAGE_TITLES = {
 };
 
 const PAGE_MAP = {
+  datashield: DataShieldMode,
   impact: Impact,
   dashboard: Dashboard,
-  pulselab: PulseLab,
   scan: Scan,
   email: EmailScan,
   agents: AgentSim,
@@ -59,7 +60,7 @@ const PAGE_MAP = {
 
 export default function App() {
   const [token, setToken] = useState(() => localStorage.getItem("token"));
-  const [page, setPage] = useState("impact");
+  const [page, setPage] = useState("datashield");
 
   function handleLogin(tok) {
     localStorage.setItem("token", tok);
@@ -69,15 +70,17 @@ export default function App() {
   function handleLogout() {
     localStorage.removeItem("token");
     setToken(null);
-    setPage("impact");
+    setPage("datashield");
   }
 
   if (!token) return <Login onLogin={handleLogin} />;
 
-  const PageComponent = PAGE_MAP[page] || Impact;
+  const PageComponent = PAGE_MAP[page] || DataShieldMode;
 
   return (
-    <div className="app">
+    <div className="app flex flex-col h-screen">
+      <TopBar />
+      <div className="flex flex-1 overflow-hidden">
       <aside className="sidebar">
         <div className="sidebar-header">
           <div className="sidebar-logo">
@@ -99,7 +102,7 @@ export default function App() {
                 >
                   <span className="nav-icon">{p.icon}</span>
                   {p.label}
-                  {p.id === "pulselab" && (
+                  {p.id === "datashield" && (
                     <span
                       style={{
                         marginLeft: "auto",
@@ -107,12 +110,12 @@ export default function App() {
                         fontWeight: 700,
                         padding: "1px 6px",
                         borderRadius: 99,
-                        background: "rgba(255,59,59,0.15)",
-                        color: "#FF3B3B",
+                        background: "rgba(0,255,156,0.15)",
+                        color: "#00FF9C",
                         letterSpacing: "0.06em",
                       }}
                     >
-                      NEW
+                      LIVE
                     </span>
                   )}
                 </div>
@@ -149,9 +152,10 @@ export default function App() {
         </div>
       </div>
 
-      <main className="main">
+      <main className="main flex-1 flex flex-col overflow-hidden relative">
         <PageComponent />
       </main>
+      </div>
     </div>
   );
 }

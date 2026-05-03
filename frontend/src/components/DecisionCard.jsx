@@ -139,12 +139,28 @@ export default function DecisionCard({ result, visible }) {
       </div>
 
       {isBlocked && (
-        <div className="bg-black/40 border border-[#1E293B] rounded-xl p-4 mb-8 max-w-2xl mx-auto text-left">
-          <div className="flex items-center text-[#FF3B3B] font-bold text-sm mb-2 uppercase tracking-wider">
-            <span className="mr-2">🚨</span> Sensitive Data Detected
+        <div className="bg-black/40 border border-[#1E293B] rounded-xl p-4 mb-8 max-w-2xl mx-auto text-left flex gap-6">
+          <div className="flex-1">
+            <div className="flex items-center text-[#FF3B3B] font-bold text-sm mb-2 uppercase tracking-wider">
+              <span className="mr-2">🚨</span> Sensitive Data Detected
+            </div>
+            <div className="text-slate-300 text-sm font-mono leading-relaxed">
+              {result.reason || "Patient Name, DOB, Medical History"}
+            </div>
           </div>
-          <div className="text-slate-300 text-sm font-mono leading-relaxed">
-            {result.reason || "Patient Name, DOB, Medical History"}
+          
+          <div className="w-px bg-slate-800"></div>
+
+          <div className="flex-1">
+            <div className="flex items-center text-slate-400 font-bold text-xs mb-2 uppercase tracking-wider">
+              <span className="mr-2">⚠️</span> If Not Blocked:
+            </div>
+            <ul className="text-slate-300 text-xs font-mono space-y-1">
+              <li>• Patient identity exposed</li>
+              <li>• Medical records leaked</li>
+              <li>• Regulatory violation (HIPAA)</li>
+              <li className="text-[#FF3B3B] font-bold">• Financial damage risk: HIGH</li>
+            </ul>
           </div>
         </div>
       )}

@@ -81,7 +81,8 @@ export default function App() {
     <div className="app flex flex-col h-screen">
       <TopBar />
       <div className="flex flex-1 overflow-hidden">
-      <aside className="sidebar">
+      {page !== "datashield" && (
+        <aside className="sidebar">
         <div className="sidebar-header">
           <div className="sidebar-logo">
             <span style={{ fontSize: "1.1rem" }}>⬡</span>
@@ -134,23 +135,7 @@ export default function App() {
           </div>
         </div>
       </aside>
-
-      <div className="topbar">
-        <span style={{ color: "var(--text2)", fontSize: "0.78rem" }}>PulseLock</span>
-        <div className="topbar-sep" />
-        <span className="topbar-title">{PAGE_TITLES[page]}</span>
-        <div style={{ flex: 1 }} />
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: "0.72rem", color: "var(--text2)" }}>
-            Real-time AI firewall for healthcare systems
-          </span>
-          <div className="topbar-sep" />
-          <div className="chip chip-green" style={{ fontSize: "0.65rem" }}>
-            <div className="pulse-dot" style={{ width: 6, height: 6 }} />
-            PROTECTED
-          </div>
-        </div>
-      </div>
+      )}
 
       <main className="main flex-1 flex flex-col overflow-hidden relative">
         <PageComponent />

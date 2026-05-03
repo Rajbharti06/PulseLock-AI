@@ -43,6 +43,8 @@ export default function DataShieldMode() {
   const [currentStepIndex, setCurrentStepIndex] = useState(-1);
   const [timelineEvents, setTimelineEvents] = useState([]);
   const [showSummary, setShowSummary] = useState(false);
+  const [narrativeText, setNarrativeText] = useState("");
+  const [showDecision, setShowDecision] = useState(false);
   
   // Track the currently active decision
   const currentStep = currentStepIndex >= 0 && currentStepIndex < DEMO_SEQUENCE.length 
@@ -54,6 +56,8 @@ export default function DataShieldMode() {
     setTimelineEvents([]);
     setCurrentStepIndex(-1);
     setShowSummary(false);
+    setNarrativeText("");
+    setShowDecision(false);
   };
 
   // Run the sequence automatically
@@ -73,35 +77,59 @@ export default function DataShieldMode() {
       return () => clearTimeout(t);
     }
 
-    // Step is active. Add to timeline after a short delay to simulate processing.
+    // Step is active. Run narrative sequence.
+    setShowDecision(false);
     const currentEvent = DEMO_SEQUENCE[currentStepIndex];
     
+    // T+0ms
+    setNarrativeText("Incoming request detected...");
+
+    // T+800ms
     const t1 = setTimeout(() => {
+      setNarrativeText("Analyzing data stream... checking against A2A policy...");
+    }, 800);
+
+    // T+2000ms
+    const t2 = setTimeout(() => {
+      if (currentEvent.decision === 'BLOCK') {
+        setNarrativeText("Sensitive healthcare data identified. Evaluating transmission risk...");
+      } else {
+        setNarrativeText("Verifying internal credentials and patient assignment...");
+      }
+    }, 2000);
+
+    // T+3500ms
+    const t3 = setTimeout(() => {
+      setShowDecision(true);
+      setNarrativeText(currentEvent.decision === 'BLOCK' ? "Threat intercepted. Action required." : "Request validated.");
+      
       setTimelineEvents(prev => [...prev, {
         timestamp: new Date().toLocaleTimeString(),
         status: currentEvent.decision === 'BLOCK' ? 'BLOCKED' : 'ALLOWED',
         threatType: currentEvent.name,
         requestBody: currentEvent.body
       }]);
-    }, 500); // Timeline populates 500ms after step starts
+    }, 3500);
 
-    // Wait 4.5 seconds on this step, then move to next
-    const t2 = setTimeout(() => {
+    // Wait 7.5 seconds on this step (longer to allow reading), then move to next
+    const t4 = setTimeout(() => {
       setCurrentStepIndex(prev => prev + 1);
-    }, 4500);
+    }, 7500);
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
     };
   }, [isRunning, currentStepIndex]);
 
 
   return (
-    <div className="flex-1 flex flex-col p-6 animate-fadeIn">
+    <div className="flex-1 flex flex-col p-6 animate-fadeIn h-full">
       
       {/* Header Area */}
-      <div className="mb-6 flex justify-between items-end border-b border-[#1E293B] pb-4">
+      <div className="mb-6 flex justify-between items-end border-b border-[#1E293B] pb-4 shrink-0">
         <div>
           <h1 className="text-3xl font-black text-white tracking-wide mb-2 flex items-center">
             <span className="text-[#00D4FF] mr-3">🛡️</span> Data Shield Mode
@@ -141,18 +169,24 @@ export default function DataShieldMode() {
           {isRunning && currentStep && !showSummary && (
             <div className="absolute inset-0 p-8 flex flex-col animate-fadeIn">
               
-              <div className="flex justify-between items-center mb-8">
+              <div className="flex justify-between items-center mb-8 shrink-0">
                 <div className="bg-[#1E293B] text-slate-300 px-4 py-1.5 rounded-full text-sm font-mono flex items-center gap-2 border border-slate-700">
                   <span className="w-2 h-2 rounded-full bg-[#00D4FF] animate-ping"></span>
                   Intercepting Request {currentStepIndex + 1} of {DEMO_SEQUENCE.length}
                 </div>
+                
+                {/* Narrative Text Display */}
+                <div className="text-[#00D4FF] font-mono text-lg animate-pulse tracking-wide font-bold">
+                  {narrativeText}
+                </div>
+
                 <div className="text-slate-500 font-mono text-sm">
-                  PROCESSING TIME: 124ms
+                  PROCESSING TIME: {showDecision ? '124ms' : '...'}
                 </div>
               </div>
 
               {/* The Intercepted Request Details */}
-              <div className="bg-black/50 border border-[#1E293B] rounded-xl p-6 mb-8 w-full max-w-4xl mx-auto shadow-lg backdrop-blur-sm relative overflow-hidden">
+              <div className="bg-black/50 border border-[#1E293B] rounded-xl p-6 mb-8 w-full max-w-4xl mx-auto shadow-lg backdrop-blur-sm relative overflow-hidden shrink-0">
                 <div className="absolute top-0 left-0 w-1 h-full bg-[#00D4FF]"></div>
                 <h3 className="text-[#00D4FF] font-bold uppercase tracking-wider text-sm mb-4">Incoming Traffic Payload</h3>
                 <div className="font-mono text-slate-300 text-lg leading-relaxed break-words">
@@ -161,15 +195,17 @@ export default function DataShieldMode() {
               </div>
 
               {/* The Dominant Decision Card */}
-              <div className="flex-1 flex flex-col items-center justify-center w-full max-w-4xl mx-auto">
-                <DecisionCard 
-                  visible={true}
-                  result={{
-                    decision: currentStep.decision,
-                    confidence: currentStep.confidence,
-                    reason: currentStep.reason
-                  }}
-                />
+              <div className="flex-1 flex flex-col items-center justify-start w-full max-w-4xl mx-auto overflow-y-auto custom-scrollbar">
+                {showDecision && (
+                  <DecisionCard 
+                    visible={true}
+                    result={{
+                      decision: currentStep.decision,
+                      confidence: currentStep.confidence,
+                      reason: currentStep.reason
+                    }}
+                  />
+                )}
               </div>
 
             </div>
